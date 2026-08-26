@@ -1,0 +1,25 @@
+# Netlify redirects for papyrusresearch.org
+# Format: <from>  <to>  <status>
+#
+# There is deliberately NO catch-all rule here. Unmatched paths must fall
+# through to Netlify's automatic 404 handling (404.html) so that genuine
+# broken links stay visible instead of being masked by a 200 rewrite.
+
+# /download -> the status page.
+#
+# Papyrus is not available to download, so a download page would be
+# misleading. The status page is the honest destination: it states what is
+# working, what is partial, and what is not yet built.
+#
+# 302 (temporary) is used on purpose. It could not be verified from this
+# repository that a /download route ever existed and was permanently
+# retired — there is no download page in the history, and search-index
+# state is not visible from here. If you confirm the old route existed and
+# will never return, change both lines below to 301 so search engines
+# consolidate the URLs; leave them at 302 if a real download or repository
+# page may exist at that path in future.
+/download     /status.html   302
+/download/    /status.html   302
+
+# If the retired route was actually /download.html, uncomment this line:
+# /download.html  /status.html  302

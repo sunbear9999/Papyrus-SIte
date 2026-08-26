@@ -3,7 +3,38 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Papyrus</title><!-- render.js overwrites this from content.js -->
+
+  <!-- ===================================================================
+       PAGE METADATA (static — read by search engines and link previews)
+       -------------------------------------------------------------------
+       Crawlers and preview bots read this block before any JavaScript
+       runs, which is why it lives in the HTML rather than in content.js.
+
+       The <title> below is AUTHORITATIVE: js/render.js leaves it alone,
+       and falls back to content.js only when a page shell still carries
+       the bare placeholder title "Papyrus". If you rename this page in
+       content.js, update the <title> and description here to match.
+       =================================================================== -->
+
+  <title>How It Works: Architecture and Pipelines — Papyrus</title>
+  <meta name="description" content="The architecture behind Papyrus: a headless core, a PySide6 interface, an event bus, registries, and the blueprint engine that runs every AI feature.">
+  <link rel="canonical" href="https://papyrusresearch.org/how-it-works.html">
+  <meta name="robots" content="index, follow">
+  <meta name="author" content="Jackson Cohrs">
+
+  <!-- Link previews. There is deliberately no og:image and no favicon
+       link: no image asset exists in images/ yet. When a title card or a
+       real screenshot is added, reference it here with an absolute URL. -->
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Papyrus">
+  <meta property="og:title" content="How It Works: Architecture and Pipelines — Papyrus">
+  <meta property="og:description" content="The architecture behind Papyrus: a headless core, a PySide6 interface, an event bus, registries, and the blueprint engine that runs every AI feature.">
+  <meta property="og:url" content="https://papyrusresearch.org/how-it-works.html">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="How It Works: Architecture and Pipelines — Papyrus">
+  <meta name="twitter:description" content="The architecture behind Papyrus: a headless core, a PySide6 interface, an event bus, registries, and the blueprint engine that runs every AI feature.">
+
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>

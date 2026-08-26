@@ -377,6 +377,28 @@
   }
 
   /* ---------------------------------------------------------------
+     Page title
+     ---------------------------------------------------------------
+     Each HTML file carries its own static <title>, because search
+     engines and link-preview bots read it before this script runs. That
+     static title therefore wins, and content.js is only the fallback:
+     it fills in the title when a page shell still carries the bare
+     placeholder "Papyrus" — which is the state of a freshly copied
+     shell for a new page.
+
+     So: if you rename a page in content.js, update the <title> and the
+     description in that page's HTML head to match.
+     --------------------------------------------------------------- */
+
+  const PLACEHOLDER_TITLE = "Papyrus";
+
+  function setTitle(site, fallback) {
+    const current = (document.title || "").trim();
+    const placeholder = tidy(site.meta.title) || PLACEHOLDER_TITLE;
+    if (current === "" || current === placeholder) document.title = fallback;
+  }
+
+  /* ---------------------------------------------------------------
      Entry point
      --------------------------------------------------------------- */
 
@@ -400,14 +422,14 @@
 
     const page = site.pages ? site.pages[pageKey] : null;
     if (!page) {
-      document.title = tidy(site.meta.title);
+      setTitle(site, tidy(site.meta.title));
       const err = el("p", "render-error");
       err.textContent = 'Content for page "' + pageKey + '" not found in content.js.';
       main.appendChild(err);
       return;
     }
 
-    document.title = tidy(page.title) + " — " + tidy(site.meta.title);
+    setTitle(site, tidy(page.title) + " — " + tidy(site.meta.title));
 
     const h1 = el("h1");
     setInline(h1, page.title);

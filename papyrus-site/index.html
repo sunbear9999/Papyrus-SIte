@@ -3,7 +3,88 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Papyrus</title><!-- render.js overwrites this from content.js -->
+
+  <!-- ===================================================================
+       PAGE METADATA (static — read by search engines and link previews)
+       -------------------------------------------------------------------
+       Crawlers and preview bots read this block before any JavaScript
+       runs, which is why it lives in the HTML rather than in content.js.
+
+       The <title> below is AUTHORITATIVE: js/render.js leaves it alone,
+       and falls back to content.js only when a page shell still carries
+       the bare placeholder title "Papyrus". If you rename this page in
+       content.js, update the <title> and description here to match.
+       =================================================================== -->
+
+  <title>Papyrus — In-Development Local-First Research Environment</title>
+  <meta name="description" content="Papyrus is an in-development, local-first desktop environment for reading, organizing, analyzing, and connecting research sources. Project documentation.">
+  <link rel="canonical" href="https://papyrusresearch.org/">
+  <meta name="robots" content="index, follow">
+  <meta name="author" content="Jackson Cohrs">
+
+  <!-- Link previews. There is deliberately no og:image and no favicon
+       link: no image asset exists in images/ yet. When a title card or a
+       real screenshot is added, reference it here with an absolute URL. -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Papyrus">
+  <meta property="og:title" content="Papyrus — In-Development Local-First Research Environment">
+  <meta property="og:description" content="Papyrus is an in-development, local-first desktop environment for reading, organizing, analyzing, and connecting research sources. Project documentation.">
+  <meta property="og:url" content="https://papyrusresearch.org/">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Papyrus — In-Development Local-First Research Environment">
+  <meta name="twitter:description" content="Papyrus is an in-development, local-first desktop environment for reading, organizing, analyzing, and connecting research sources. Project documentation.">
+
+  <!-- Structured data. Only facts established by this site and repository:
+       no ratings, offers, prices, download URLs, versions, release dates,
+       licence or operating-system claims. -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "https://papyrusresearch.org/#website",
+          "url": "https://papyrusresearch.org/",
+          "name": "Papyrus",
+          "description": "Documentation for Papyrus, an in-development, local-first desktop research environment.",
+          "inLanguage": "en",
+          "creator": {
+            "@id": "https://papyrusresearch.org/#creator"
+          },
+          "about": {
+            "@id": "https://papyrusresearch.org/#software"
+          }
+        },
+        {
+          "@type": "Person",
+          "@id": "https://papyrusresearch.org/#creator",
+          "name": "Jackson Cohrs"
+        },
+        {
+          "@type": [
+            "SoftwareApplication",
+            "SoftwareSourceCode"
+          ],
+          "@id": "https://papyrusresearch.org/#software",
+          "name": "Papyrus",
+          "url": "https://papyrusresearch.org/",
+          "description": "Papyrus is an in-development, local-first desktop research environment for reading, organizing, analyzing, and connecting collections of research sources. Extraction and indexing run on the user's own machine without a generative model; a language model is used only for tasks that require judgement, and every such call is traceable to exact source text.",
+          "applicationCategory": "Research and reference software",
+          "creativeWorkStatus": "In development",
+          "programmingLanguage": "Python",
+          "inLanguage": "en",
+          "creator": {
+            "@id": "https://papyrusresearch.org/#creator"
+          },
+          "mainEntityOfPage": {
+            "@id": "https://papyrusresearch.org/#website"
+          }
+        }
+      ]
+    }
+  </script>
+
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>

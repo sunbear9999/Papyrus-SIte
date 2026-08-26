@@ -157,15 +157,19 @@ window.SITE = {
            workspaces and settings, so two pieces of research never share state
            accidentally.`,
 
-          `The design premise is narrow and specific: a research tool should extract,
-           store and index everything it can *without* a language model, and should call
+          `The app is designed to minimise the number of calls to a generative model. It will
+           store and index everything it can *without* a language model, and calls
            a language model only for the small number of tasks that genuinely require
-           judgement. Every such call is visible, editable, traceable, and attributable
-           back to exact source text. The reasoning behind that premise is set out on the
-           [Motivation](why.html) page.`,
+           judgement. All highlights, notes, and other artifacts generated from 
+           language models are explicitly marked as such, and require manual human verification with
+           a provided link to jump to the source the model used to generate the output. 
+           The user can also export a log that shows precisely when LLM calls were used, what they were used for
+           and whether they were verified by the researcher themselves. This design philosophy is further explained 
+           on the 
+           [Philosophy](why.html) page.`,
 
-          `This site is a project write-up rather than a product page. It describes what
-           the software does, why it was built the way it was, and which parts of it are
+          `This site is intended as a project write-up rather than a product page. It describes what
+           the software does, the philosophy behind it, and which parts of it are
            finished. The [Status](status.html) page states plainly what works, what is
            rough, and what does not exist yet.`,
         ]},
@@ -179,35 +183,38 @@ window.SITE = {
                         showing the Chat tab mid-answer with citation bubbles.` },
 
         // ---- Overview: the core loop ----
-        { type: "heading", level: 2, text: `The core loop` },
+        { type: "heading", level: 2, text: `How it works` },
 
         { type: "prose", body: [
-          `A working session in Papyrus follows the same eight-step loop regardless of
-           what kind of material is being studied. Steps two and three happen for every
+          `A brief overview of how the applications is used. The steps below list 
+           the general workflow for a project regardless of the material being studied. Steps two and three happen for every
            source; the rest are used as the work requires.`,
         ]},
 
         { type: "steps", items: [
           { title: `Import`,
-            body: `Add sources to a project. Any supported format is accepted: documents,
-                   spreadsheets, video, audio and images all become first-class sources
-                   with the same feature set.` },
-          { title: `Automatic understanding`,
-            body: `Within seconds, and with no generative model calls at all, each source
-                   is parsed, segmented, indexed and extracted into provenance-tracked
-                   artifacts.` },
-          { title: `Read and annotate`,
-            body: `Read in the viewer or in reflowable reading mode; highlight, attach
-                   notes, and apply tags.` },
+            body: `Add sources to a project. Papyrus accepts many supported formats such as PDFs,
+            DOCX, EPUBs, MP4s, MP3s, and CSVs. Regardless of the format, each source is proccessed the same
+            (using an offline transcription engine for non-text based formats) and fully viewable and annotatable.` },
+          { title: `Determinstic Ingestion`,
+            body: `Upon a source being added, it is processed determinstically without
+            any generative AI calls. This allows the extraction of entities such as citations,
+            people, events, and organizations, allowing the researcher to discover recurring entities across source type.
+            This step also begins building the vector database the LLM tools can search` },
+          { title: `Review and annotate`,
+            body: `All imported sources can be fully reviewed in-app, both by reading text
+            sources, listening/watching multimedia content, and adding annotations. Annotations across
+            sources are automatically accesible in the visual workspace, allowing the researcher to organize and connect notes` },
           { title: `Analyse`,
-            body: `Run an analysis mode or template to produce a grounded argument map, a
-                   methodology tracker, or an entity network.` },
-          { title: `Explore`,
-            body: `Review the results in the Intelligence dock, or push them onto the
-                   visual Workspace canvas as a live graph.` },
+            body: `Anaylsis mode allows the researcher to select a pre-defined anaylsis template
+            or create their own. It then runs a combination of determnistic extraction, lower-level 
+            machine learning calls, and generative LLM calls to build an interactive, linked-to-source visual diagram. 
+            One pre-defined template is the argument map, which extracts claims, evidence, and reasoning from a selected source and
+            builds it into a node map that provides a quick overview of the source's argument, with evidence nodes
+            quoting the source verbatim and linking to those specific quotes` },
           { title: `Ask`,
-            body: `Chat, search, or run the research agent. Every answer carries citation
-                   bubbles that jump to the exact span they came from.` },
+            body: `Chat with the research assistant to get direct answers about the sources from a locally-running model.
+            All answers provide citation bubbles that link the user to the exact information the LLM used when formulating an answer` },
           { title: `Automate`,
             body: `Capture any repeated procedure as a blueprint in the visual editor and
                    run it afterwards as a one-click custom tool.` },

@@ -3,7 +3,38 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Papyrus</title><!-- render.js overwrites this from content.js -->
+
+  <!-- ===================================================================
+       PAGE METADATA (static — read by search engines and link previews)
+       -------------------------------------------------------------------
+       Crawlers and preview bots read this block before any JavaScript
+       runs, which is why it lives in the HTML rather than in content.js.
+
+       The <title> below is AUTHORITATIVE: js/render.js leaves it alone,
+       and falls back to content.js only when a page shell still carries
+       the bare placeholder title "Papyrus". If you rename this page in
+       content.js, update the <title> and description here to match.
+       =================================================================== -->
+
+  <title>Project Status and Roadmap — Papyrus</title>
+  <meta name="description" content="An honest account of what works in Papyrus, what is partial, and what is not yet built, plus the technology stack. Papyrus is in development, not yet released.">
+  <link rel="canonical" href="https://papyrusresearch.org/status.html">
+  <meta name="robots" content="index, follow">
+  <meta name="author" content="Jackson Cohrs">
+
+  <!-- Link previews. There is deliberately no og:image and no favicon
+       link: no image asset exists in images/ yet. When a title card or a
+       real screenshot is added, reference it here with an absolute URL. -->
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Papyrus">
+  <meta property="og:title" content="Project Status and Roadmap — Papyrus">
+  <meta property="og:description" content="An honest account of what works in Papyrus, what is partial, and what is not yet built, plus the technology stack. Papyrus is in development, not yet released.">
+  <meta property="og:url" content="https://papyrusresearch.org/status.html">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Project Status and Roadmap — Papyrus">
+  <meta name="twitter:description" content="An honest account of what works in Papyrus, what is partial, and what is not yet built, plus the technology stack. Papyrus is in development, not yet released.">
+
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>

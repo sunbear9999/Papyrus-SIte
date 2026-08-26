@@ -1,0 +1,15 @@
+# robots.txt for https://papyrusresearch.org/
+#
+# Everything on this site is public documentation for Papyrus, an
+# in-development research application. Search-engine crawlers and AI
+# search / answer crawlers are both welcome: the single group below
+# applies to all of them, so no crawler-specific rules are needed.
+#
+# CSS, JavaScript and images are intentionally left crawlable. The pages
+# build their content from content.js at runtime, so a crawler that
+# cannot fetch and execute the JavaScript will see very little.
+
+User-agent: *
+Allow: /
+
+Sitemap: https://papyrusresearch.org/sitemap.xml
