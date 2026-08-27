@@ -41,7 +41,10 @@ Two rules cover everything:
 3. **Most items can carry an image.** Steps, list items, definitions, cards,
    callouts and table cells all accept the same four image fields.
 
-Whatever route you use, the behaviour is identical: the file is looked up in
+**Video counts as an image.** Give any of these an `.mp4` filename and you
+get a video player instead of a picture, with the same fields. See section 6.
+
+Whatever route you use, the behavior is identical: the file is looked up in
 `images/`, and if it isn't there yet you get a described placeholder instead
 of a broken image. Filenames may include subfolders — `image: "steps/01.png"`
 loads `images/steps/01.png` — and any extension works, not just `.png`.
@@ -66,7 +69,7 @@ number.
 
 ## The four sizes
 
-| `size` | Behaviour | Default for |
+| `size` | Behavior | Default for |
 |---|---|---|
 | `figure` | Fills the figure column, large descriptive placeholder | figure blocks, gallery items, item images |
 | `block` | Natural size, capped at the container — never upscaled | cards, callouts, the inline mark |
@@ -131,7 +134,7 @@ hold an image, text, or both:
   columns: [`Subsystem`, `What it does`, `Screenshot`],
   rows: [
     [`Ingestion`,
-     `Parses every source into one normalised stream`,
+     `Parses every source into one normalized stream`,
      { image: "subsystems/ingestion.png",
        alt: `The process monitor during ingestion.`,
        placeholder: `The process monitor with several jobs running.` }],
@@ -158,6 +161,48 @@ columns on narrow screens:
 ]},
 ```
 
+## 6. Video works exactly like an image
+
+A filename ending `.mp4`, `.m4v`, `.webm`, `.ogv` or `.mov` renders a video
+player instead of a picture. **The fields are identical** — `image:`, `alt:`,
+`caption:`, `placeholder:`, `size:` — so anywhere in this document that says
+"image", a clip works the same way: figure blocks, steps, table cells,
+galleries, list items, definitions, cards, callouts, and the inline
+`![alt](clip.mp4)` mark.
+
+```js
+{ type: "figure",
+  image: "clips/import.mp4",
+  alt: `A clip of sources being imported.`,
+  caption: `Importing a mixed set of sources.`,
+  placeholder: `The import dialog, from opening it to the file list filling.` },
+```
+
+Captions still number automatically, so a clip becomes "Figure 4." in the same
+sequence as the pictures around it. A missing file still gives you a dashed
+box — it just says **Video placeholder** instead of Screenshot placeholder.
+
+Two extra fields apply only to video:
+
+| Field | Effect |
+|---|---|
+| `poster: "clips/import-still.png"` | A still frame shown before playback starts |
+| `autoplay: true` | A silent, looping clip — the video equivalent of a GIF. Switched off automatically for readers whose system asks for reduced motion. |
+
+Notes:
+
+- Clips get normal playback controls, including the browser's own
+  **fullscreen** button. That is why clicking a video does not open the
+  click-to-enlarge overlay the way clicking an image does: the click belongs
+  to the player.
+- `.mp4` (H.264) is the safe choice; `.webm` also plays everywhere current.
+  `.mov` depends on the browser, so convert those to `.mp4`.
+- Keep clips short and small. They are served from this folder with no
+  streaming and no compression step, so a 50MB screen recording is a 50MB
+  download. A few seconds at a modest bitrate is usually enough to show a
+  feature working.
+- A subfolder such as `images/clips/` keeps them separate from screenshots.
+
 ## If an image doesn't appear
 
 You will see a dashed placeholder box naming the exact path it tried, for
@@ -177,7 +222,7 @@ order they appear on the site.
 ### 1. `overview-main-window.png`
 **Section:** opening, after the introductory paragraphs
 **Should show:** The full application window: document explorer on the left, a
-PDF open in the centre viewer with a visible highlight, and the research dock
+PDF open in the center viewer with a visible highlight, and the research dock
 open on the right showing the Chat tab mid-answer with citation bubbles.
 
 ### 2. `overview-core-loop.png`
@@ -190,17 +235,15 @@ populated workspace canvas.
 
 ## Motivation — `why.html`
 
-### 3. `why-deterministic-vs-llm.png`
-**Section:** Deterministic-first: the model is a scalpel
-**Should show:** A two-column comparison: the left column lists everything
-produced deterministically at ingest (sentences, entities, citations, dates,
-tables, classifications, summaries, relation seeds); the right shows the single,
-small synthesis call the model receives. Can be a screenshot of the analysis
-result card showing the model-call count, or an authored figure.
+### 3. ~~`why-deterministic-vs-llm.png`~~ — no longer needed
+This figure has been **replaced by three authored tables** in `content.js`,
+under the Deterministic-first heading: tier one (no model), tier two (small
+local models) and tier three (a language model is genuinely called). No
+screenshot is required. Edit the tables directly if the split changes.
 
 ---
 
-## Feature Catalogue — `features.html`
+## Feature Catalog — `features.html`
 
 ### 4. `features-document-explorer.png`
 **Section:** Projects and sources
@@ -242,19 +285,19 @@ quote, and the context-filter button visible.
 
 ### 10. `features-workspace.png`
 **Section:** The knowledge workspace
-**Should show:** The workspace canvas with 20 to 40 colour-coded nodes and typed
+**Should show:** The workspace canvas with 20 to 40 color-coded nodes and typed
 edges, the workspace selector at top, the filter controls visible, and one node
 selected showing its properties panel.
 
 ### 11. `features-workspace-ai-tools.png`
 **Section:** The knowledge workspace
 **Should show:** The workspace with the AI tools context menu open (Find
-Weakpoints, Colour Organise by Theme, Generate Outline, Declutter), ideally
+Weakpoints, Color Organize by Theme, Generate Outline, Declutter), ideally
 alongside the weakpoints results dialog.
 
 ### 12. `features-blueprint-editor.png`
 **Section:** Blueprints and workflows
-**Should show:** The Blueprint Editor tab: the categorised step sidebar on the
+**Should show:** The Blueprint Editor tab: the categorized step sidebar on the
 left, a multi-node workflow on the canvas with connections, and the node
 inspector open on the right showing model, prompt key, inputs and output key.
 
@@ -372,7 +415,7 @@ rather not include it, delete its `figure` block from `content.js`.
 ## Figures drawn by the site itself
 
 Five diagrams are hand-drawn in SVG inside `js/render.js` and need no image
-file. They follow the light and dark colour themes automatically. Their captions
+file. They follow the light and dark color themes automatically. Their captions
 are editable in `content.js` like any other text.
 
 | Diagram id | Page | Shows |

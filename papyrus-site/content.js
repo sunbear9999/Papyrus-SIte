@@ -100,7 +100,7 @@ window.SITE = {
     
     // institution:``,
     // contact:    ``,
-    // licence:    ``,
+    // license:    ``,
     // repository: ``,   // no repository link is shown by default
     // ---------------------------------------------------------------
   },
@@ -126,7 +126,7 @@ window.SITE = {
     { page: "overview",     href: "index.html",        label: `Overview` },
     { page: "why",          href: "why.html",          label: `Philosophy` },
     { page: "features",     href: "features.html",     label: `Features` },
-    { page: "how-it-works", href: "how-it-works.html", label: `How It Works` },
+    // { page: "how-it-works", href: "how-it-works.html", label: `How It Works` },  <- page content is commented out below; re-enable both together
     { page: "intelligence", href: "intelligence.html", label: `Intelligence Layer` },
     { page: "extending",    href: "extending.html",    label: `Extensibility` },
     { page: "status",       href: "status.html",       label: `Status & Roadmap` },
@@ -152,15 +152,15 @@ window.SITE = {
            inside a single application that runs entirely on the user's own machine.`,
 
           `It is built as a Python and Qt application, using PySide6 for the interface.
-           Work is organised into **projects**, saved as \`.pdfproj\` files. A project
+           Work is organized into **projects**, saved as \`.pdfproj\` files. A project
            holds its own document set, annotations, extracted knowledge, vector index,
            workspaces and settings, so two pieces of research never share state
            accidentally.`,
 
-          `The app is designed to minimise the number of calls to a generative model. It will
+          `The app is designed to minimize the number of calls to a generative model. It will
            store and index everything it can *without* a language model, and calls
            a language model only for the small number of tasks that genuinely require
-           judgement. All highlights, notes, and other artifacts generated from 
+           judgment. All highlights, notes, and other artifacts generated from 
            language models are explicitly marked as such, and require manual human verification with
            a provided link to jump to the source the model used to generate the output. 
            The user can also export a log that shows precisely when LLM calls were used, what they were used for
@@ -179,14 +179,14 @@ window.SITE = {
           alt: `The Papyrus main window with a document open and the research dock docked at the right.`,
           caption: `The main window with a document open and the research dock at right.`,
           placeholder: `The full application window: document explorer on the left, a PDF open in the
-                        centre viewer with a visible highlight, and the research dock open on the right
+                        center viewer with a visible highlight, and the research dock open on the right
                         showing the Chat tab mid-answer with citation bubbles.` },
 
         // ---- Overview: the core loop ----
         { type: "heading", level: 2, text: `How it works` },
 
         { type: "prose", body: [
-          `A brief overview of how the applications is used. The steps below list 
+          `A brief overview of how the application is used. The steps below list 
            the general workflow for a project regardless of the material being studied. Steps two and three happen for every
            source; the rest are used as the work requires.`,
         ]},
@@ -194,51 +194,70 @@ window.SITE = {
         { type: "steps", items: [
           { title: `Import`,
             body: `Add sources to a project. Papyrus accepts many supported formats such as PDFs,
-            DOCX, EPUBs, MP4s, MP3s, and CSVs. Regardless of the format, each source is proccessed the same
-            (using an offline transcription engine for non-text based formats) and fully viewable and annotatable.` },
-          { title: `Determinstic Ingestion`,
-            body: `Upon a source being added, it is processed determinstically without
-            any generative AI calls. This allows the extraction of entities such as citations,
-            people, events, and organizations, allowing the researcher to discover recurring entities across source type.
-            This step also begins building the vector database the LLM tools can search` },
+            DOCX, EPUBs, MP4s, MP3s, and CSVs. Regardless of the format, each source is processed the same
+            (using an offline transcription engine for non-text based formats) and fully viewable and annotatable.`,
+            image: "steps/1.png",
+            alt: "The import dialog with several files visible",
+            caption: "Adding Sources to a Project",
+             },
+          { title: `Automatic processing`,
+            body: `As soon as a source is added it is read and taken apart, with no generative
+            AI involved at all. Papyrus calls this **deterministic** processing: it is done by
+            parsers and pattern rules that give the same answer every time, so nothing produced
+            here can be invented. It pulls out citations, people, events and organizations, which
+            is what lets the researcher find the same name recurring across sources of different
+            kinds. This step also begins building the vector database the AI tools search later.`,
+            image: "steps/2.png",
+            alt: "The deterministic processing dialog in Papyrus",
+            caption: "Dialog to select which deterministic processing options to use" },
           { title: `Review and annotate`,
             body: `All imported sources can be fully reviewed in-app, both by reading text
             sources, listening/watching multimedia content, and adding annotations. Annotations across
-            sources are automatically accesible in the visual workspace, allowing the researcher to organize and connect notes` },
-          { title: `Analyse`,
-            body: `Anaylsis mode allows the researcher to select a pre-defined anaylsis template
-            or create their own. It then runs a combination of determnistic extraction, lower-level 
-            machine learning calls, and generative LLM calls to build an interactive, linked-to-source visual diagram. 
+            sources are automatically accessible in the visual workspace, allowing the researcher to organize and connect notes` ,
+            image: "steps/3.png",
+            alt: "A PDF open in the viewer with a highlight visible and the workspace open",
+            caption: "Reviewing and annotating a source with the workspace open" },
+          { title: `Analyze`,
+            body: `Analysis mode allows the researcher to select a pre-defined analysis template
+            or create their own. It then builds an interactive visual diagram, every part of which
+            links back to the source, using three kinds of work in combination: the automatic
+            extraction described above, small purpose-built models that do one narrow job each,
+            and a generative model for the few judgments that genuinely need one. 
             One pre-defined template is the argument map, which extracts claims, evidence, and reasoning from a selected source and
             builds it into a node map that provides a quick overview of the source's argument, with evidence nodes
-            quoting the source verbatim and linking to those specific quotes` },
+            quoting the source verbatim and linking to those specific quotes` ,
+            image: "steps/4.png",
+            alt: "Anaylsis Mode open in Research Dock with a completed argument map visible",
+            caption: "Analysis mode with an argument map built from a source" },
           { title: `Ask`,
             body: `Chat with the research assistant to get direct answers about the sources from a locally-running model.
-            All answers provide citation bubbles that link the user to the exact information the LLM used when formulating an answer` },
+            All answers provide citation bubbles that link the user to the exact information the LLM used when formulating an answer`,
+            image: "steps/5.png",
+            alt: "The chat interface with a response visible",
+            caption: "Asking questions about the sources" },
           { title: `Automate`,
             body: `Create custom workflow blueprints using the visual editor. These workflows can be 
             run on any source in any project, and make it easy to automate research steps like extracting and 
-            normalizing data from PDFs` },
+            normalizing data from PDFs`,
+            image: "steps/6.png",
+            alt: "The blueprint editor with a workflow visible",
+            caption: "Editing the Chat Agent Blueprint in the Workflow Editor" },
           { title: `Write`,
             body: `Use the in-app writing editor to synthesize notes, diagrams, and data into one complete
             writing piece. You can easily copy and paste quotes and their citations from the visual workspace 
-            into your final document` },
+            into your final document` ,
+            image: "steps/7.png",
+            alt: "The writing editor with a document open",
+            caption: "Writing a document with the writing editor, with the visual workspace accesible on the side" },
         ]},
 
-        { type: "figure",
-          image: "overview-core-loop.png",
-          alt: `The same project shown at three stages of the core loop.`,
-          caption: `The same project seen at three stages of the core loop.`,
-          placeholder: `A composite or wide capture suggesting progression: a freshly imported document
-                        list, the same documents with highlights and notes, and a populated workspace
-                        canvas.` },
-
+        
         // ---- Overview: what is distinctive ----
         { type: "heading", level: 2, text: `Distinctive features` },
 
         { type: "prose", body: [
           `Papyrus is designed to do more than just chunk sources into a vector database
-          that is then fed into an LLM. It is designed to use a variety of determinstic and 
+          that is then fed into an LLM. It is designed to use a variety of deterministic and 
           machine learning tools in combination with generative AI to create a more holistic overview
           of a source while keeping all extracted information linked to the source, auditable, and keep
           the researcher involved in the process.
@@ -253,13 +272,13 @@ window.SITE = {
 
           `**Extraction happens before, and without, any model.** The ingestion pipeline
            makes zero generative model calls; the model is reserved for synthesis and
-           judgement.
-           [Deterministic-first](why.html#deterministic-first-the-model-is-a-scalpel)`,
+           judgment.
+           [Deterministic-first](why.html#deterministic-first)`,
 
           `**Every stored fact carries a locator.** Page and character offsets, or row and
            column, or timestamp and speaker -- along with the extractor, its version, and
            a confidence.
-           [Nothing unsourced](why.html#nothing-unsourced-provenance-on-every-assertion)`,
+           [Nothing unsourced](why.html#nothing-unsourced)`,
 
           `**Every prompt is editable and every call is traced.** There are no hidden
            prompts and no hidden model calls; Papyrus aims to eliminate the "black box"
@@ -287,44 +306,46 @@ window.SITE = {
 
         { type: "table",
           caption: `The major subsystems and where they live in the UI.`,
-          columns: [`Subsystem`, `What it does`, `Where it lives in the UI`],
+          columns: [`Subsystem`, `What it does`, `Where it lives in the UI`, `Images`],
           rows: [
             [`Source ingestion`,
-             `Converts every source into a universal textual represenation, extracts entities, and embeds sources into the vector database`,
-             `Document explorer; process monitor`],
+             `Converts every source into a universal textual representation, extracts entities, and embeds sources into the vector database`,
+             `Document explorer; process monitor`, {image: "table/1.mp4", alt: "A video showing the document explorer with a PDF open and the process monitor showing an in progress ingestion job", caption: "A video showing the full ingestion process"}],
             [`Artifact store`,
              `A single relational knowledge base of extracted entities`,
-             `Intelligence Dock`, 'Notes Dock'],
+             `Intelligence dock; Notes dock`, {image: "table/2.png"
+              , alt: "The Intelligence Dock with a list of extracted entities visible", caption: "The Intelligence Dock with a list of extracted entities visible"
+             }],
             [`Retrieval`,
              `Pulls embedded document chunks from the vector database, reranks them, and provides the best chunks to the LLM for source-grounded outputs`,
-             `Research Assistant; context filter dialog`],
+             `Research Assistant; context filter dialog`, {image: "table/3.png", alt: "The Context Filter Dialog for Research Assistant Open", caption:"The context filter menu for research assistant, controlling what context the LLM is given"}],
             [`Document analysis`,
              `Structured extraction producing grounded argument maps, methodology trackers and entity networks`,
-             `Analysis tab; Workspace canvas`],
+             `Analysis tab; Workspace canvas`, {image: "table/4.png", alt:"The Anaylsis Contract Editor Screen", caption: "The Anaylsis Contract Editor Screen, allowing the user to edit and create their own anaylsis modes"}],
             [`Research dock`,
              `Chat, search, analysis, brainstorm, the research agent, custom tools and the blueprint editor`,
-             `A single dockable panel with seven tabs`],
+             `A single dockable panel with seven tabs`, {image: "table/5.png", alt:"The Research Dock with the empty Brainstorm Tab Open", caption: "The Research Dock with the empty Brainstorm Tab Open"}],
             [`Knowledge workspace`,
              `A visual canvas of typed nodes and typed relations, with AI tools that operate on a selection`,
-             `Workspace`],
+             `Workspace`, {image: "table/6.png", alt:"The Workspace with a small network of nodes and relations visible", caption: "The Workspace with a small network of nodes and relations visible"}],
             [`Workflow engine`,
              `Executes every AI feature as a blueprint of steps; allows building custom workflows and AI tools`,
-             `Blueprint editor; custom tools; process monitor`],
+             `Blueprint editor; custom tools; process monitor`, {image: "table/7.png", alt:"A list of available workflow steps", caption:"A list of some of the available workflow steps in the builder"}],
             [`Data management`,
              `Editable datasets, table extraction from PDF regions, charts, and real structured queries`,
-             `Data dock`],
+             `Data dock`, {image: "table/8.png", alt: "The Data Dock with a table extracted from a pdf open", caption: "The Data Dock with a table extracted from a PDF open"}],
             [`Citations`,
-             `Bibliography and in-text extraction, matching between the two, and autoamtic APA, MLA and Chicago formatting`,
-             `Citation dock`],
+             `Bibliography and in-text extraction, matching between the two, and automatic APA, MLA and Chicago formatting`,
+             `Citation dock`, {image: "table/9.png", alt: "The Citation Dock with a list of citations synced from the Zotero Plugin", caption: "The Citation Dock with a list of citations synced from the Zotero Plugin"}],
             [`Prompts and tracing`,
              `Every prompt is a named, editable entry; every model call produces a trace record`,
-             `Prompt editor; trace viewer; process monitor`],
+             `Prompt editor; trace viewer; process monitor`, {image: "table/10.png", alt: "The Prompt Editor with a list of prompts visible, open to an anaylsis prompt", caption: "The Prompt Editor with a list of prompts visible"}],
             [`Plugins`,
              `Registry-based extension of every subsystem above, with separate network permission`,
-             `Plugin manager; plugin-contributed docks`],
+             `Plugin manager; plugin-contributed docks`, {image: "table/11.png", alt: "The Plugin Manager with a list of installed plugins visible, and settings to enable and disable plugins, as well as revoke network access", caption: "The Plugin Manager with a list of Plugins Installed"}],
             [`Help`,
              `Authored topics, F1 context help, and interactive tutorials that point at real widgets`,
-             `Help Center; overlay`],
+             `Help Center; overlay`, {image: "table/12.png", alt: "The Help Center with a list of help topics visible, open to the getting started menu", caption: "The Help Center with a list of help topics visible"}],
           ]},
 
         // ---- Overview: where to go next ----
@@ -333,11 +354,11 @@ window.SITE = {
         { type: "prose", body: [
           `[Philosophy](why.html) sets out the problems the project is a response to and
            the design principles that follow from them. [Features](features.html) is the
-           full feature catalogue, grouped by subsystem. [How It Works](how-it-works.html)
-           describes the layered architecture, the event bus and the workflow engine.
+           full feature catalog, grouped by subsystem.
            [Intelligence Layer](intelligence.html) explains how the intelligence
-           system extracts entities and builds knowledge graphs. [Extensibility](extending.html) 
-           covers plugins and packs. [Status](status.html) is the honest account of what is finished and whats still in progress.`,
+           system extracts entities and builds knowledge graphs. [Extensibility](extending.html)
+           covers plugins and packs. [Status](status.html) is the honest account of what is
+           finished and what is still in progress.`,
         ]},
 
       ],
@@ -358,15 +379,15 @@ window.SITE = {
           and carry with them a host of ethical concerns relating to privacy, data ownership,
           transparency, and the environment. Papyrus is designed to act fully "human-in-the-loop" every
           step of the way; LLMs can help find and organize information, but will never write for you.
-          LLMs are used only for tasks that require them, and determinstic and lighter machine learning
-          algorthims are used where possible. All LLM responses are linked to the source material they were generated from, and the user is required to verify
+          LLMs are used only for tasks that require them, and deterministic and lighter machine learning
+          algorithms are used where possible. All LLM responses are linked to the source material they were generated from, and the user is required to verify
           the output manually, ensuring no hallucinated information slips through. 
           Furthermore, Papyrus is designed to be fully local-first, with no cloud service required for any core feature, 
           allowing data security and alleviating environmental concerns associated with data centers. 
           All system prompts used by various LLM tools are viewable, and editable, ensuring full transparency
           of how the LLM came to its answers.`,
           `Papyrus also aims to be a universal research tool, combining features such as citation management,
-          note taking, reading, data anaylsis, and writing into one application, rather than requiring the user to use multiple tools for different parts of the research process.`,
+          note taking, reading, data analysis, and writing into one application, rather than requiring the user to use multiple tools for different parts of the research process.`,
         ]},
 
         // ---- Why: the problem ----
@@ -387,10 +408,10 @@ window.SITE = {
         { type: "heading", level: 3, text: `Language models are the wrong instrument for most of the work` },
         { type: "prose", body: [
           `Generative models are expensive, slow, non-deterministic and prone to
-           hallucinations. Using one for a task that a parser, a named-entity recogniser, a
+           hallucinations. Using one for a task that a parser, a named-entity recognizer, a
            regular expression or a graph algorithm already solves is a bad trade on multiple
            levels: cost, latency, reproducibility and correctness.`,
-          `Sentence segmentation, citation matching and date normalisation are solved
+          `Sentence segmentation, citation matching and date normalization are solved
            problems with deterministic solutions. Spending a model call on them buys
            nothing and loses the guarantee that running the same input twice gives the
            same output.`,
@@ -437,7 +458,7 @@ window.SITE = {
         { type: "prose", body: [
           `Every stage of the pipeline runs on the device. Parsing, optical character
            recognition, transcription, embedding, named-entity recognition, sentence
-           classification, reranking, summarisation and generative inference are all
+           classification, reranking, summarization and generative inference are all
            local. Local models are served by Ollama or llama.cpp; embeddings are written
            to a local ChromaDB store held beside the project file. No cloud service is
            required for any core feature.`,
@@ -458,34 +479,139 @@ window.SITE = {
         { type: "prose", body: [
           `Ingestion performs **zero generative model calls**.
            Sentence segmentation, entity extraction, sentence classification, citation
-           matching, date normalisation, and table extraction, are all performed deterministically or with small
+           matching, date normalization, and table extraction, are all performed deterministically or with small
            local encoder models.`,
-          `This serves multiple purposes. Deterministic stages are idempotent, so
-           re-running them is free when nothing has changed. Their output remains stable, so
-           an artifact identifier written today will point to the same sentence
-           tomorrow. They are fast enough to run on import rather than on demand, which is
-           what allows a source to be searchable shortly after being added. And they
-           are auditable in a way a model call is not: an extractor doesn't inherently
-           rely on randomness like a language model does.`,
-          `The generative model is then reserved for the work that actually needs
-           judgement such as final synthesis, and a small structured patch over an
-           already-complete deterministic baseline. When it is called it runs at a low
-           temperature (low randomness), 
-           The llm is also provided compact context assembled under an explicit token budget,
-           and its result is cached. The
-           [Intelligence Layer](intelligence.html) page describes exactly where the
-           boundary sits.`,
+          `*Deterministic* here means simply that the same input always produces the same
+           output -- there is no randomness anywhere in the process. That one property buys
+           several things at once. Re-running a stage costs nothing when the source has not
+           changed, because the result is guaranteed to be identical. A reference written
+           today still points at the same sentence tomorrow. The work is fast enough to do on
+           import rather than on demand, which is why a source becomes searchable moments
+           after it is added. And it can be audited, in a way a model call cannot: an
+           extractor can be pointed at exactly the rule it followed.`,
+          `The generative model is then reserved for the work that genuinely needs judgment:
+           final synthesis, and a small set of corrections over an already-complete
+           deterministic result. When it is called, it is run at a low temperature -- the
+           setting that controls how much randomness the model is allowed -- and given a
+           compact, deliberately budgeted amount of context, and its answer is cached. The
+           [Intelligence Layer](intelligence.html) page describes exactly where the boundary
+           sits.`,
         ]},
 
-        { type: "figure",
-          image: "why-deterministic-vs-llm.png",
-          alt: `A comparison of the work done deterministically at ingest against the work given to the language model.`,
-          caption: `What is extracted without a model, and what the model is actually asked to do.`,
-          placeholder: `A two-column comparison: the left column lists everything produced
-                        deterministically at ingest (sentences, entities, citations, dates, tables,
-                        classifications, summaries, relation seeds); the right shows the single, small
-                        synthesis call the model receives. Can be a screenshot of the analysis result
-                        card showing the model-call count, or an authored figure.` },
+        { type: "prose", body: [
+          `The split is worth setting out in full, because the claim only means something
+           if it can be checked. Almost everything below happens once, when a source is
+           added, and is then stored and reused. Only the last table needs a language
+           model, and only when you ask for it.`,
+        ]},
+
+        { type: "table",
+          caption: `Tier one -- no model of any kind. Ordinary code, following rules someone wrote.`,
+          columns: [`What it produces`, `How it is done`, `When`],
+          rows: [
+            [`Text and structure`,
+             `A parser for each format turns a PDF, Word file, EPUB, web page or plain text into one common stream of blocks`,
+             `On import`],
+            [`Numbered sentences`,
+             `Every block is split into sentences, each keeping its character positions in the original file`,
+             `On import`],
+            [`A keyword index`,
+             `SQLite's built-in full-text index, which is what makes exact names, codes and figures findable`,
+             `On import`],
+            [`Measurements, methods and glossary terms`,
+             `Pattern rules and a per-project glossary, catching what a general-purpose tool will not know about`,
+             `On import`],
+            [`The same person across documents`,
+             `Mentions that reduce to the same standard form are gathered together across every document in the project`,
+             `On import`],
+            [`One shared timeline`,
+             `Dates written six different ways in six different sources are rewritten into a single standard form`,
+             `On import`],
+            [`Citations, paired up`,
+             `Bibliography entries and in-text references are extracted separately, then matched to each other by a dedicated matcher`,
+             `On import`],
+            [`Tables as real data`,
+             `Extracted as rows and columns you can sort, filter and total, rather than as a paragraph of numbers`,
+             `On import, or from a page region on demand`],
+            [`Summaries`,
+             `TextRank, a graph algorithm that keeps the most central sentences of a section, so every sentence in the summary genuinely appears in the source`,
+             `Deep processing`],
+            [`A first pass at argument structure`,
+             `Which sentences support, contradict or expand on which, worked out from linking words and from how close sentences sit in the document`,
+             `Deep processing`],
+            [`Answers to questions about numbers`,
+             `Sums, averages and group-by questions run as real database queries over extracted tables`,
+             `Per question`],
+            [`The combined search ranking`,
+             `Four separate searches merged by counting placements, rather than by comparing scores that are not comparable`,
+             `Per question`],
+            [`The context budget`,
+             `The shortlist packed cheapest-first into the space the model is allowed: bare facts, then summaries, then full sentences`,
+             `Per question`],
+            [`A source's credibility score`,
+             `A checklist of structural signals: the DOI against a bundled retracted-paper database, the journal against an offline list of predatory journals, and whether metadata and a reference list are present at all`,
+             `After extraction`],
+            [`Formatted references`,
+             `APA, MLA and Chicago formatting, and the works-cited list built from them`,
+             `On demand`],
+          ]},
+
+        { type: "table",
+          caption: `Tier two -- small local models. Task-specific, modest in size, and none of them write text.`,
+          columns: [`What it produces`, `How it is done`, `When`],
+          rows: [
+            [`People, organizations and places`,
+             `spaCy, an open-source language-processing library, does a general pass and keeps the categories apart`,
+             `On import`],
+            [`Claim, evidence and reasoning labels`,
+             `A small local classifier model, if one is installed. Without it, Papyrus falls back to reading the writer's linking words, which is less accurate but needs no download`,
+             `On import`],
+            [`Search by meaning`,
+             `Sentences and summaries are turned into vectors and written to a local index, which is what finds passages that say the same thing in different words`,
+             `On import`],
+            [`A closer second look at search results`,
+             `An optional reranker model re-orders the top of the combined list. It stays off unless the model is present`,
+             `Per question`],
+            [`Speech turned into text`,
+             `faster-whisper transcribes audio and video offline, with timestamps accurate enough to jump to`,
+             `On import`],
+            [`Text out of scans and images`,
+             `Tesseract reads the words and records where each one sits on the page, giving a scan the same provenance as a digital file`,
+             `On import, or on demand`],
+            [`Pages read aloud`,
+             `A text-to-speech voice, installed separately`,
+             `On demand`],
+          ]},
+
+        { type: "table",
+          caption: `Tier three -- a language model is genuinely called. Only here, and only when asked.`,
+          columns: [`What it produces`, `How it is done`, `When`],
+          rows: [
+            [`An answer in chat`,
+             `Work out what to look for, retrieve it, pack it to fit, then ask -- with the instruction to cite the sentence identifiers it was given`,
+             `Per question`],
+            [`Corrections to an argument map`,
+             `A small set of changes to a diagram already built without a model, checked before being accepted, with quotes fetched from the source record rather than taken from the reply`,
+             `Per analysis run, cached`],
+            [`The write-up of a section in an analysis`,
+             `One step of the analysis workflow, over context that was assembled deterministically`,
+             `Per analysis run, cached`],
+            [`Brainstorming`,
+             `Hypotheses, arguments and connections across the corpus, rather than factual question answering`,
+             `On demand`],
+            [`A model-written summary`,
+             `Separate from the TextRank summaries above. Run deliberately, and labeled as model output`,
+             `On demand`],
+            [`The research agent's next move`,
+             `Deciding what to do and which tool to use, one step at a time, with the session recorded`,
+             `On demand`],
+            [`Workspace tools`,
+             `Find Weakpoints, Color Organize by Theme, Generate Outline and Declutter, each working on the nodes you selected`,
+             `On demand`],
+            [`A drafted workflow`,
+             `The builder assistant turns a plain-English description into a blueprint you then edit by hand`,
+             `On demand`],
+          ]},
 
         // ---- Why: principle 3 ----
         { type: "heading", level: 2, text: `Nothing unsourced` },
@@ -542,7 +668,7 @@ window.SITE = {
            brainstorm, the analysis modes, entity discovery, citations, workspace tools
            and plugins all call the same \`retrieve(...)\`. No feature parses, embeds or
            prompts on its own.`,
-          `The alternative -- a seperate pipeline per feature -- fails in a predictable way. Each
+          `The alternative -- a separate pipeline per feature -- fails in a predictable way. Each
            pipeline drifts, each caches separately, each has its own notion of what a
            chunk is, and an improvement to retrieval quality has to be implemented several
            times to be felt anywhere. Under a single path, a better reranker improves chat,
@@ -580,7 +706,7 @@ window.SITE = {
 
         { type: "definitions", items: [
           { term: `A cloud service`,
-            body: `There is no server component, no account, no synchronisation service and
+            body: `There is no server component, no account, no synchronization service and
                    no hosted processing. Everything works solely on the users device` },
           { term: `A replacement for a reference manager`,
             body: `Papyrus extracts, matches and formats citations for the material in a
@@ -591,7 +717,7 @@ window.SITE = {
                    retrieval and workflow machinery as everything else. A version of Papyrus
                    with the chat tab removed would still do most of what it currently does.` },
           { term: `A general-purpose writing assistant`,
-            body: `The writing dock exist to assemble material that is already in the
+            body: `The writing dock exists to assemble material that is already in the
                    project such as notes, quotes, outlines, works-cited entries. It is not designed
                    to write for you` },
         ]},
@@ -606,12 +732,12 @@ window.SITE = {
        ================================================================= */
 
     features: {
-      title: `Feature Catalogue`,
+      title: `Feature Catalog`,
       subtitle: `Every capability the application has, grouped by subsystem, with a brief description of how each one works.`,
       sections: [
 
         { type: "prose", body: [
-          `This page is the complete catalogue. The [intelligence layer](intelligence.html) and 
+          `This page is the complete catalog. The [intelligence layer](intelligence.html) and 
           [plugin architecture](extending.html) are further described on their respective pages.`,
         ]},
 
@@ -631,7 +757,7 @@ window.SITE = {
            per-project processing policy controls how deeply each source is processed on import.`,
           `Papyrus is not solely a PDF reader. Every listed format supports
            the same core features: highlighting, notes, analysis, universal search and
-           jump-to-source.d`,
+           jump-to-source.`,
         ]},
 
         { type: "table",
@@ -639,12 +765,12 @@ window.SITE = {
           columns: [`Format`, `Extensions`, `Notes`],
           rows: [
             [`PDF`, `.pdf`, `Full support: page rendering, text layer, highlighting, and OCR for scanned pages`],
-            [`Word`, `.docx`, `Headings and tables recognised as document structure`],
+            [`Word`, `.docx`, `Headings and tables recognized as document structure`],
             [`Legacy Word`, `.doc`, '--'],
-            [`EPUB`, `.epub`, `Chapters and headings recognised`],
+            [`EPUB`, `.epub`, `Chapters and headings recognized`],
             [`Plain text`, `.txt`, `--`],
-            [`Markdown`, `.md`, `Hash-prefixed headings recognised as structure`],
-            [`HTML`, `.html, .htm`, `Headings and paragraphs recognised`],
+            [`Markdown`, `.md`, `Hash-prefixed headings recognized as structure`],
+            [`HTML`, `.html, .htm`, `Headings and paragraphs recognized`],
             [`Rich text`, `.rtf`, `--`],
           ]},
 
@@ -655,7 +781,7 @@ window.SITE = {
             [`Tabular data`, `.csv, .tsv, .xlsx`,
              `Opens as a read-only preview; can be edited in the data dock. For spreadsheets the active sheet is loaded`],
             [`Video`, `.mp4 .mov .mkv .webm .avi .m4v .wmv .flv .mpg .mpeg .3gp .ogv .ts`,
-             `Transcribed in the background by an offline speech-to-text engine, producing searchable captions and timestamp-accurate jump-to-source. These transcriptions are embeded for the LLM to search`],
+             `Transcribed in the background by an offline speech-to-text engine, producing searchable captions and timestamp-accurate jump-to-source. These transcriptions are embedded for the LLM to search`],
             [`Audio`, `.mp3 .wav .m4a .flac .ogg .aac .wma .opus`,
              `Same transcription path as video. Speaker turns are captured; named-speaker resolution is not yet implemented`],
             [`Images`, `.png .jpg .jpeg .tiff .bmp .webp`,
@@ -663,7 +789,7 @@ window.SITE = {
           ]},
 
         { type: "prose", body: [
-          `Once imported, a parser registry converts every source into one normalised
+          `Once imported, a parser registry converts every source into one normalized
            stream of document blocks, and the artifact service extracts entities from these blocks.
             All tools -- indexing, extraction,
            retrieval, analysis -- sees that one stream and does not know or care which
@@ -671,7 +797,7 @@ window.SITE = {
         ]},
 
         { type: "figure",
-          image: "features-document-explorer.png",
+          image: "formats/1.png",
           alt: `The document explorer listing a project containing several different source formats.`,
           caption: `The document explorer with a mixed-format project.`,
           placeholder: `The source list of a project containing a PDF, a DOCX, an EPUB, a CSV, an MP4 and
@@ -692,48 +818,61 @@ window.SITE = {
 
         { type: "definitions", items: [
           { term: `Highlighting`,
-            body: `Any text, regardless of the format it comes from, can be highlighted in various colors.` },
+            body: `Any text, regardless of the format it comes from, can be highlighted in various colors.`, 
+            image: "features/highlight.png", alt: "A PDF with multiple different color highlights on it", 
+            caption: "Multi-color highlights on a PDF" },
           { term: `Annotation notes`,
-            body: `Notes attached to a highlight.` },
+            body: `Notes attached to a highlight.` , image: "features/annotations.png", 
+            alt: "The Notes Dock Open to several highlights with notes", caption: "Notes dock with several highlights and notes open" },
           { term: `Universal jump-to-source`,
             body: `Clicking any citation bubble, note, search result, data cell or graph node
                    navigates to its exact origin: page and span for documents, timestamp for
                    audio and video, cell for tabular data, word box for text read from an
-                   image.` },
+                   image.` , image: "features/source.mp4", alt:"A video showing the universal jump-to-source feature", 
+                   caption: "Jumping to a source directly from the workspace"},
           { term: `Video player`,
             body: `Captions, a transcript panel, timestamp toggling, and a control to save a
-                   note at the current timestamp.` },
+                   note at the current timestamp.` , image: "features/video.png", alt: "A video with the transcript panel open", 
+                   caption: "Video Player with locally generated transcript open"},
           { term: `Audio player and image viewer`,
-            body: `The same annotation and jump-to-source behaviour applied to media
+            body: `The same annotation and jump-to-source behavior applied to media
                    sources.` },
           { term: `CSV preview viewer`,
-            body: `A read-only view of a spreadsheet with a button to edit in Data Dock.` },
+            body: `A read-only view of a spreadsheet with a button to edit in Data Dock.` , image: "features/csv.png", alt: "A CSV file open in the CSV previewer", 
+            caption: "CSV Previewer with a button to edit in Data Dock"},
           { term: `Document explorer`,
             body: `The project source list, with right-click actions for rename, remove, run
                    OCR, extract pages, evaluate source, and any action a plugin has
-                   contributed.` },
+                   contributed.`, image: "features/doc.png", alt: "Document Explorer with right-click actions", caption: "Document Explorer with right-click actions" },
         ]},
 
         { type: "figure",
-          image: "features-reading-mode.png",
+          image: "features/reading.mp4",
           alt: `A document in reflowable reading mode with the display settings panel open.`,
           caption: `Reflowable reading mode with display settings.`,
           placeholder: `A document in reading mode: reflowed text at a comfortable measure, the
                         page-navigation control visible, and the display-settings panel open showing
                         typography controls.` },
 
-        /* ---- 3. Intelligence layer, summarised ---- */
+        /* ---- 3. Intelligence layer, summarized ---- */
         { type: "heading", level: 2, text: `The intelligence layer` },
 
         { type: "prose", body: [
-          `The intelligence layer is the backbone of the application and is described at
-           length on [its own page](intelligence.html). `
+          `The intelligence layer is the backbone of the application. In short: every source
+           is read and taken apart on import rather than when a question is asked, and what
+           that produces -- sentences, entities, dates, citations, tables, and which sentences
+           are claims rather than evidence -- is stored in a database inside the project, with
+           every entry remembering the exact place it came from. Almost none of that first
+           pass involves a generative model. Every intelligent feature listed on this page
+           reads from that one store through one shared search path.`,
+          `It is described in full, mechanism by mechanism, on
+           [its own page](intelligence.html).`,
         ]},
 
         { type: "figure",
-          image: "features-intelligence-dock.png",
-          alt: `The Intelligence dock showing canonical entities and the provenance of a selected entity.`,
-          caption: `The Intelligence dock browsing extracted artifacts.`,
+          image: "features/graph.png",
+          alt: `The Intelligence dock open to the graph view of a PDF.`,
+          caption: `The Intelligence dock showing the graph view for a PDF.`,
           placeholder: `The Intelligence dock with its view tabs (Overview, Entities, Timeline, Claims &
                         Evidence, Graph, Citations, Artifacts, Runs) and the Entities view showing
                         canonical entities with mention counts and provenance detail for a selected
@@ -743,37 +882,35 @@ window.SITE = {
         { type: "heading", level: 2, text: `Retrieval and search` },
 
         { type: "prose", body: [
-          `The project can be searched in a variety of ways, inclduing searching an individual
-          source, searching the entire project, or running a semantic similarity search over the 
-          vector database, allowing users to find relevant content based on meaning rather than just keywords. 
-           A context filter
-           dialog allows the user to choose exactly
-           which documents, tags and sources the AI is allowed to search. A semantic similarity search
-           based on the vector database is then combined with lightweight rerankers to provide optimal context to the LLM.`,
+          `A project can be searched a document at a time, across every source at once, or by
+           meaning rather than by exact words -- so a search for *funding pressure* can return a
+           passage that never uses either word. Searching by meaning is what the vector database
+           built during import is for; the [Intelligence Layer](intelligence.html#finding-the-right-passage)
+           page explains how it works and how it is combined with ordinary keyword search.`,
+          `Before asking the AI anything, a context filter dialog lets the user choose exactly
+           which documents, tags and sources it is allowed to look at. What comes back from the
+           search is then put in order by a lightweight reranker, so that the most relevant
+           passages are the ones the model actually receives.`,
         ]},
 
         { type: "definitions", items: [
           { term: `Local retrieval search`,
-            body: `Uses semantic similarty to return citation cards carrying the source document, page, the matched
+            body: `Uses semantic similarity to return citation cards carrying the source document, page, the matched
                    passage and a relevance score. Each card jumps to its span.` },
           { term: `External academic search shortcuts`,
             body: `Query shortcuts for JSTOR, Google Scholar, Reddit, news search and an
                    arbitrary custom URL, returning cards that open in the system browser.
-                   This allows users to quickly access external academic resources to find additional sources` },
+                   This allows users to quickly access external academic resources to find additional sources` , image: "features/search.png", 
+                   alt: "The Search Tab's manual search screen", caption: "The Search Tab's manual search screen" },
           { term: `Research Assistant query generator`,
             body: `Takes a stated research goal, formulates several targeted keywords, 
               and returns the results as cards with clickable links to search the keywords on academic sources. An optional mode also
                    scans the citations of retrieved papers to surface related works not yet
-                   in the project. This makes finding sources for a given topic much easier, as the LLM can help formulate optimal boolean keyword searches` },
+                   in the project. This makes finding sources for a given topic much easier, as the LLM can help formulate optimal boolean keyword searches`,
+                  image: "features/terms.png", alt:"the search cards resulting from a query to the research assistant", caption: "Search terms with clickable keyword cards generated by the Research Assistant" },
         ]},
 
-        { type: "figure",
-          image: "features-search-tab.png",
-          alt: `The Search tab showing retrieval results as citation cards.`,
-          caption: `Retrieval search results as citation cards.`,
-          placeholder: `The Search tab showing a query and a list of citation cards with source document,
-                        page number, highlighted passage and relevance score, plus the external-source
-                        buttons and the Research Assistant query generator field.` },
+      
 
         /* ---- 5. Document analysis ---- */
         { type: "heading", level: 2, text: `Document analysis` },
@@ -793,24 +930,18 @@ window.SITE = {
              `Claims, reasoning pillars, evidence quotes`, `supports, refutes, part_of, derived_from`],
             [`Methodology Tracker`, `Empirical studies, technical reports`,
              `Method steps in order, findings, limitations`, `next_step, produces, supports, contradicts`],
-            [`Relationship / Network Tracker`, `Biography, history, organisational and news analysis`,
-             `People, organisations, affiliations, events`, `affiliated_with, opposes, collaborated_with, led_by`],
+            [`Relationship / Network Tracker`, `Biography, history, organizational and news analysis`,
+             `People, organizations, affiliations, events`, `affiliated_with, opposes, collaborated_with, led_by`],
           ]},
 
         { type: "prose", body: [
-          `Each template declares which node and relationtypes the model may create, ensuring a structured graph is generated for any template`,
+          `Each template declares which node and relation types the model may create, ensuring a structured graph is generated for any template`,
           `The way this feature ensures trustworthy outputs is described in full
            under [grounded graphs](intelligence.html#grounded-graphs).  Results can be added onto the Workspace
            canvas as an editable graph.`,
         ]},
 
-        { type: "figure",
-          image: "features-analysis-tab.png",
-          alt: `The Analysis tab after a run, showing the result card and its quality report.`,
-          caption: `An analysis result card with its quality report.`,
-          placeholder: `The Analysis tab after a run: the mode picker, detail profile selector, and the
-                        result card reporting claims, reasoning units, evidence, branches, section
-                        coverage, validation status, cache status and the number of model calls made.` },
+        
 
         /* ---- 6. The research dock ---- */
         { type: "heading", level: 2, text: `The research dock` },
@@ -843,7 +974,7 @@ window.SITE = {
         ]},
 
         { type: "figure",
-          image: "features-research-dock-chat.png",
+          image: "features/citation.png",
           alt: `The Chat tab with an answer containing inline citation bubbles.`,
           caption: `Chat with inline citation bubbles.`,
           placeholder: `The Chat tab with a multi-turn conversation, an answer containing two or three
@@ -869,10 +1000,10 @@ window.SITE = {
         ]},
 
         { type: "figure",
-          image: "features-workspace.png",
-          alt: `The workspace canvas populated by an argument-map analysis.`,
-          caption: `The knowledge workspace after an argument-map analysis.`,
-          placeholder: `The workspace canvas with 20 to 40 colour-coded nodes and typed edges, the
+          image: "table/6.png",
+          alt: `The workspace canvas populated by a basic diagram.`,
+          caption: `The workspace canvas populated by a basic diagram..`,
+          placeholder: `The workspace canvas with 20 to 40 color-coded nodes and typed edges, the
                         workspace selector at top, the filter controls visible, and one node selected
                         showing its properties panel.` },
 
@@ -882,25 +1013,26 @@ window.SITE = {
 
         { type: "definitions", items: [
           { term: `Find Weakpoints`,
-            body: `Anaylzes the structure of the selected nodes to determine areas of weakness in the research, suggests additional information to look for.` },
+            body: `Analyzes the structure of the selected nodes to determine areas of weakness in the research, and suggests additional information to look for.` },
           { term: `Find New Connections`,
-            body: `Looks for similarites between existing nodes and` },
+            body: `Looks for similarities between existing nodes and proposes typed edges
+                   between ones the researcher has not yet connected.` },
           { term: `Generate Outline`,
             body: `Turns a selection of nodes and the edges between them into a hierarchical
                    textual outline to help organize thoughts.` },
           { term: `Fill Graph`,
-            body: `Anaylzes the selected nodes, and searches for possible evidence to fill gaps, and strengthen claims` },
+            body: `Analyzes the selected nodes and searches for possible evidence to fill gaps and strengthen claims.` },
           { term: `Declutter & Simplify`,
             body: `Merges semantically duplicate nodes, removes low-confidence edges,
                    shortens overlong titles, and re-lays out the result.` },
         ]},
 
         { type: "figure",
-          image: "features-workspace-ai-tools.png",
-          alt: `The workspace AI tools context menu open over the canvas.`,
-          caption: `Workspace AI tools operating on the graph.`,
-          placeholder: `The workspace with the AI tools context menu open (Find Weakpoints, Colour
-                        Organise by Theme, Generate Outline, Declutter), ideally alongside the
+          image: "features/declutter.mp4",
+          alt: `The Workspace declutter tool working on a graph.`,
+          caption: `The Workspace Declutter tool cleaning up clustered nodes`,
+          placeholder: `The workspace with the AI tools context menu open (Find Weakpoints, Color
+                        Organize by Theme, Generate Outline, Declutter), ideally alongside the
                         weakpoints results dialog.` },
 
         /* ---- 8. Blueprints and workflows ---- */
@@ -926,8 +1058,8 @@ window.SITE = {
             [`Model`, `LLM query, LLM schema query for structured JSON output, extraction repair`],
             [`Retrieval`, `Build retrieval plan, artifact retrieve, pack artifact context, RAG search, rank blocks`],
             [`Extraction`, `Extract document blocks, entities, citations, dates, tables and PDF grids; section extract; detect patterns; document chunk; read document`],
-            [`Knowledge`, `Artifact write, evidence store, relate, ontology catalogue, ontology upsert, graph validator, section subgraph merge, section synthesis and store, quote hydration, build deterministic quotes`],
-            [`Analysis`, `Analysis contract, analysis compact, analysis finalise, analysis send to workspace`],
+            [`Knowledge`, `Artifact write, evidence store, relate, ontology catalog, ontology upsert, graph validator, section subgraph merge, section synthesis and store, quote hydration, build deterministic quotes`],
+            [`Analysis`, `Analysis contract, analysis compact, analysis finalize, analysis send to workspace`],
             [`Data`, `Query database, database write, structured query, source statistics, notes read`],
             [`Flow and I/O`, `Foreach, branch, user input, show item selector, await event, dispatch event, python script, select PDF region, workspace write`],
             [`Evaluation`, `Bias evaluation`],
@@ -935,7 +1067,7 @@ window.SITE = {
 
         { type: "prose", body: [
           `The Blueprint Editor is a node-graph canvas. Step types are dragged in from a
-           categorised sidebar, nodes are connected, and the selected node is edited in an
+           categorized sidebar, nodes are connected, and the selected node is edited in an
            inspector. The blueprint's name, description, mount points and active contexts
            are set on the same canvas and saved into the project. The editor supports
            duplicate, delete, zoom to cursor, fit-to-view and several wiring modes. An AI
@@ -949,7 +1081,7 @@ window.SITE = {
 
         { type: "table",
           caption: `Output formats available to a blueprint step.`,
-          columns: [`Output format`, `Behaviour`],
+          columns: [`Output format`, `Behavior`],
           rows: [
             [`silent`, `No interface output; the result is stored in state only`],
             [`stream`, `Token-by-token text`],
@@ -964,10 +1096,10 @@ window.SITE = {
           ]},
 
         { type: "figure",
-          image: "features-blueprint-editor.png",
+          image: "steps/6.png",
           alt: `The visual blueprint editor with a multi-step workflow on the canvas.`,
-          caption: `The visual blueprint editor.`,
-          placeholder: `The Blueprint Editor tab: the categorised step sidebar on the left, a multi-node
+          caption: `The visual blueprint editor open to the Chat Agent Blueprint.`,
+          placeholder: `The Blueprint Editor tab: the categorized step sidebar on the left, a multi-node
                         workflow on the canvas with connections, and the node inspector open on the
                         right showing model, prompt key, inputs and output key.` },
 
@@ -981,7 +1113,7 @@ window.SITE = {
            prompts are all registered entries in a prompt manager, referenced by key from
            the steps that use them. The
            Prompt Editor exposes every registered prompt for editing, so tone, format,
-           schema instructions or behaviour can be changed without touching code, and
+           schema instructions or behavior can be changed without touching code, and
            plugins can register their own prompts or override an existing one by key.`,
           `Every model call produces a trace record capturing the exact rendered
            prompt as sent, the retrieved context chunks, and the raw response. A trace
@@ -989,9 +1121,9 @@ window.SITE = {
         ]},
 
         { type: "figure",
-          image: "features-prompt-trace.png",
+          image: "features/trace.png",
           alt: `The prompt trace viewer showing the rendered prompt, retrieved context and raw response for one call.`,
-          caption: `The prompt trace for a single AI response.`,
+          caption: `The prompt trace for a single AI response in Chat Tab.`,
           placeholder: `The prompt trace viewer showing the exact rendered system prompt, the retrieved
                         context chunks, and the raw model response for one call.` },
 
@@ -1004,7 +1136,7 @@ window.SITE = {
         ]},
 
         { type: "figure",
-          image: "features-process-monitor.png",
+          image: "features/process.png",
           alt: `The process monitor listing concurrent background jobs during ingestion.`,
           caption: `The process monitor during ingestion.`,
           placeholder: `The process monitor listing several concurrent background jobs (parsing, entity
@@ -1036,7 +1168,7 @@ window.SITE = {
         ]},
 
         { type: "figure",
-          image: "features-settings-llm-controls.png",
+          image: "features/settings.png",
           alt: `The LLM Controls settings tab with model role assignments and capability filters.`,
           caption: `The LLM Controls settings tab.`,
           placeholder: `Settings open on LLM Controls: model role assignments, capability filters, context
@@ -1061,9 +1193,9 @@ window.SITE = {
         ]},
 
         { type: "figure",
-          image: "features-citation-dock.png",
-          alt: `The Citation Dock listing matched references with a style selector.`,
-          caption: `The citation dock with matched references.`,
+          image: "features/citations.png",
+          alt: `An APA-style works-cited list generated from the Citation Dock.`,
+          caption: `A works-cited list generated from the Citation Dock.`,
           placeholder: `The Citation Dock listing citation records with a style selector (APA / MLA /
                         Chicago), matching diagnostics, and a generated works-cited list.` },
 
@@ -1082,7 +1214,7 @@ window.SITE = {
         { type: "heading", level: 2, text: `Data dock` },
 
         { type: "prose", body: [
-          `The Data Dock is the quantitative side of the application: it serves as a mini speadsheet editor for reading data and building charts`,
+          `The Data Dock is the quantitative side of the application: it serves as a mini spreadsheet editor for reading data and building charts`,
         ]},
 
         { type: "definitions", items: [
@@ -1138,7 +1270,7 @@ window.SITE = {
         { type: "definitions", items: [
           { term: `OCR dock`,
             body: `Runs optical character recognition over scanned pages or whole documents
-                   to make them searchable and analysable.` },
+                   to make them searchable and analyzable.` },
           { term: `Text-to-speech dock`,
             body: `Converts selected pages to audio, with voice and speed selection and
                    installable voices.` },
@@ -1167,7 +1299,7 @@ window.SITE = {
         { type: "prose", body: [
           `A help registry holds authored topics across Getting Started,
            Reading & Annotation, Chat & AI Research, Document Analysis, Workspace,
-           Workflows & Blueprints, Organisation, AI & Prompts, Tools, Data Dock and Help
+           Workflows & Blueprints, Organization, AI & Prompts, Tools, Data Dock and Help
            itself. The Help Center dialog browses them and searches their full text.`,
           `Shift+F1 enters a "what's
            this" mode in which clicking any element jumps straight to its help topic.`,
@@ -1347,9 +1479,9 @@ window.SITE = {
         { type: "prose", body: [
           `Because a step declares its model options and required capabilities rather than
            naming a model, and because the model itself is resolved at runtime from
-           application state, changing the model assigned to a role changes the behaviour of
+           application state, changing the model assigned to a role changes the behavior of
            every blueprint that depends on that role without any blueprint being edited.
-           The full catalogue of step types and output formats is on the
+           The full catalog of step types and output formats is on the
            [Features](features.html#blueprints-and-workflows) page.`,
         ]},
 
@@ -1427,208 +1559,268 @@ window.SITE = {
 
     intelligence: {
       title: `The Intelligence Layer`,
-      subtitle: `Extraction, storage, retrieval and grounded analysis -- the part of the system every other part rests on.`,
+      subtitle: `How Papyrus reads a source, what it remembers, how it finds things again, and where the language model actually gets used.`,
       sections: [
 
-        { type: "callout", tone: "note", title: `The goal, in one sentence`, body: [
-          `Papyrus reads a library the way an expert researcher would -- deterministically
-           first, citing everything, spending the language model only where judgement is
-           genuinely needed -- and turns it into a living, queryable, editable knowledge
-           graph that powers every intelligent feature in the application.`,
+        { type: "prose", body: [
+          `Most AI research tools do their thinking at the moment you ask a question. They
+           chop your documents into chunks of text, find the chunks that look closest to
+           what you asked, and hand those to a language model. Nothing is kept between
+           questions, so the tool never gets to know your material.`,
+
+          `Papyrus works the other way round. The moment a source is added it is read and
+           taken apart: sentences, people, organizations, places, dates, citations, tables,
+           and which sentences are making a claim rather than backing one up. All of that
+           goes into a small database stored inside the project, and every entry in it
+           remembers the exact spot in the exact document it came from. That database, not
+           the raw text, is what every intelligent feature in the application reads from
+           afterwards.`,
+
+          `Two things follow. The first is that the hard work happens once, on import, so
+           asking a question later costs a search rather than a fresh reading of everything.
+           The second matters more: almost none of that first pass uses a language model, so
+           almost none of it can be invented. The model is brought in afterwards, for the
+           few jobs that genuinely need judgment.`,
         ]},
 
-        { type: "prose", body: [
-          `The working slogan is *ingest once, understand everything*. A source is
-           processed when it arrives, not when it is queried, and what that processing
-           produces is a structured store rather than a cache of text chunks. Every feature
-           that appears intelligent -- chat, search, analysis, the workspace tools, entity
-           discovery, the timeline -- reads from that one store through one retrieval path.`,
-        ]},
-
-        // ---- Artifact store ----
-        { type: "heading", level: 2, text: `The artifact store` },
+        // ---- Ingestion ----
+        { type: "heading", level: 2, text: `What happens when a source is added` },
 
         { type: "prose", body: [
-          `Everything extracted is an **artifact** in a relational knowledge base, with a
-           companion edge table for relations and a vector index keyed by the same
-           identifiers. Six tables carry the structure.`,
+          `Adding a source starts a queue of small jobs that run in the background, in order,
+           because each one needs the one before it. You can watch them go past in the
+           process monitor, and stop any of them. The whole sequence is listed below in the
+           order it runs.`,
         ]},
 
         { type: "table",
-          caption: `The tables of the artifact store.`,
-          columns: [`Table`, `Role`],
+          caption: `The stages of import, in order. The names in the left column are the ones that appear in the process monitor and in the diagram below.`,
+          columns: [`Stage`, `What it actually does`],
           rows: [
-            [`intelligence_artifacts`,
-             `Every node: source, block, sentence, entity, entity mention, bibliography entry, in-text citation, date mention, table, table row, transcript segment, summary, annotation and chunk. Each carries exact text, normalised text, a normalised key, a locator, a section path, metadata, a confidence, a created_by field, an extractor name and version, a model role and name where applicable, an input hash and a status. Mirrored into an FTS5 index for keyword search.`],
-            [`intelligence_artifact_edges`,
-             `Every relation: contains and part_of, located_in, mention_of, mentioned_in, co_occurs_with, affiliated_with, cites, supports, attacks, elaborates, summarizes and annotates -- each with its own confidence and provenance.`],
-            [`intelligence_artifact_embeddings`,
-             `Per-artifact embedding status: the vector store reference, the model used, and the input hash it was computed from.`],
-            [`intelligence_stage_status`,
-             `The per-source, per-stage cache: status, content hash, settings hash, prompt key and model. This table is what makes the pipeline idempotent.`],
-            [`intelligence_analysis_runs`,
-             `Analysis output cached on mode, parameter hash and document hash.`],
-            [`intelligence_retrieval_cache`,
-             `Fused and reranked candidates cached on query hash and project-state hash.`],
+            [`SOURCE_REGISTERED`, `The file is copied into the project and given an identifier.`],
+            [`PARSED_BLOCKS`, `The file -- whatever its format -- is converted into one plain stream of text blocks, so nothing downstream has to care whether it started as a PDF, an EPUB or a video transcript.`],
+            [`SECTIONS`, `Headings and chapters are recognized, and each block is split into numbered sentences.`],
+            [`FULL_TEXT_INDEX`, `The text is added to a keyword index, which is the point at which the source becomes searchable.`],
+            [`ENTITIES`, `People, organizations, places and domain terms are pulled out and matched up with the same names in other documents.`],
+            [`DATES`, `Dates are found and rewritten into one standard form so they can share a timeline.`],
+            [`CITATIONS`, `The bibliography and the in-text references are read separately, then matched to each other.`],
+            [`TABLES`, `Tables are lifted out as real rows and columns rather than as text that happens to look like a table.`],
+            [`CLAIMS`, `Each sentence is labeled as a claim, as evidence, or as reasoning.`],
+            [`EMBEDDINGS`, `Sentences and summaries are turned into vectors, which is what makes search-by-meaning possible.`],
+            [`Deep mode only`, `Extractive summaries, a first pass at which sentences support or contradict which, and figure handling.`],
           ]},
 
+        { type: "diagram", id: "ingestion-pipeline",
+          caption: `The stages of import. Nothing in this sequence calls a generative model.` },
+
         { type: "prose", body: [
-          `Two further tables hold per-source processing mode and job records. Alongside
-           them sits the identity scheme that makes the whole store stable: artifact
-           identifiers are deterministic, generated as a UUID5 over the source, the artifact
-           type and the storage reference. Re-running a stage therefore produces the same
-           identifiers, so a citation written into a note last month still resolves after
-           the document has been re-processed.`,
-          `A canonical entity is a project-level artifact with no source, keyed on its
-           entity type and normalised key. That is the mechanism by which the same person or
-           organisation is recognised across documents: individual mentions stay attached to
-           their own sources and point at the canonical record.`,
+          `Two properties of this sequence are worth pulling out, because a lot of the rest
+           of the design depends on them.`,
+
+          `**It does not repeat work.** Before a stage runs, Papyrus takes a fingerprint of
+           the source's contents and of the settings involved, and compares it to the
+           fingerprint from last time. If nothing has changed, the stage is skipped. Editing
+           one document does not re-process the other forty, and re-running import on a
+           project is close to free.`,
+
+          `**No generative model is called anywhere in it.** This is the single most
+           important fact about the intelligence layer. Everything described above is done by
+           parsers, pattern rules, and small purpose-built models that give the same answer
+           every time. So the contents of the store are fast to produce, cheap to redo,
+           stable enough to link to, and -- unlike anything a language model writes -- not a
+           guess.`,
+        ]},
+
+        { type: "prose", body: [
+          `How much of the sequence runs is a per-project setting, since a scanned
+           three-hundred-page archive and a six-page paper do not need the same treatment.`,
+        ]},
+
+        { type: "table",
+          caption: `The four processing modes.`,
+          columns: [`Mode`, `What runs`],
+          rows: [
+            [`Minimal`, `Parse, split into sentences, index. The quickest route to a source you can search and read.`],
+            [`Balanced`, `Adds entities, dates, citations, tables, sentence labeling and embeddings. This is the default.`],
+            [`Deep`, `Adds summaries, a first pass at argument structure, and figure handling.`],
+            [`Manual`, `Nothing happens automatically; each stage is run by hand when wanted.`],
+          ]},
+
+        // ---- Extractors ----
+        { type: "heading", level: 2, text: `What the first pass extracts, and how` },
+
+        { type: "prose", body: [
+          `Each item below is a separate, replaceable component, and a plugin can add its own
+           alongside them. None of them is a language model.`,
+        ]},
+
+        { type: "definitions", items: [
+          { term: `Splitting into sentences`,
+            body: `Every block is split into numbered sentences, each with its character
+                   positions in the original file. The sentence is the unit the rest of the
+                   system points at: a citation bubble in chat, a node in a graph and a
+                   search result are all, underneath, references to a particular sentence in
+                   a particular document.` },
+          { term: `Finding names and terms`,
+            body: `Three layers stacked on top of each other. First **spaCy**, an
+                   open-source language-processing library, does a general pass for people,
+                   organizations, places and similar. It keeps those categories apart, so a
+                   person called Ford and the Ford Motor Company are never merged into one
+                   thing. Second, pattern rules and a per-project glossary catch what a
+                   general-purpose tool will not know about -- measurements, method names,
+                   dataset names, and any terms you have told the project to watch for.
+                   Third, mentions that reduce to the same standard form are gathered
+                   together across every document in the project, which is what lets the
+                   application tell you that the same person appears in nine sources.` },
+          { term: `Labeling sentences`,
+            body: `Every sentence is tagged as a claim, as evidence or as reasoning, with a
+                   confidence score and extra labels for definitions, methodology and quotes.
+                   If you have installed the small local classifier model this is done by
+                   that; if not, it falls back to reading the signal words a writer uses --
+                   *therefore*, *because*, *we found that* -- which is less accurate but
+                   costs nothing and needs no download.` },
+          { term: `Summarizing`,
+            body: `Summaries are made with **TextRank**, a graph algorithm that ranks the
+                   sentences of a section by how central they are to it and keeps the best
+                   few. The result is built out of sentences that genuinely appear in the
+                   source. A model-written summary is also available, but it is a separate
+                   thing you run deliberately, and it is labeled as model output.` },
+          { term: `Connecting arguments`,
+            body: `A first pass at which sentences support, contradict or expand on which,
+                   worked out from linking words and from how near the sentences are to each
+                   other in the document. It is rough, but it is a real starting structure
+                   produced with no model involved.` },
+          { term: `Citations`,
+            body: `Bibliography entries and in-text references are extracted separately and
+                   then paired up by a dedicated matcher, which is what allows a reference in
+                   the body to resolve to a full entry.` },
+          { term: `Dates`,
+            body: `Found and rewritten into a single standard form, so dates written six
+                   different ways in six different sources can share one timeline.` },
+          { term: `Tables`,
+            body: `Extracted as actual data you can sort, filter and total, rather than as a
+                   picture of a table or a paragraph of numbers.` },
+          { term: `Answering questions about numbers`,
+            body: `Sums, averages and group-by questions over extracted tables are run as
+                   real database queries. This is why the language model is never asked to do
+                   arithmetic -- something it is famously unreliable at.` },
+        ]},
+
+        { type: "diagram", id: "scalpel",
+          caption: `The split. Everything on the left is produced on import without a model; the model is only ever asked for what is on the right.` },
+
+        // ---- Artifact store ----
+        { type: "heading", level: 2, text: `Where it all gets stored` },
+
+        { type: "prose", body: [
+          `Everything the stages above produce is written into one SQLite database that
+           lives beside the project file, as a long list of records. Papyrus calls each
+           record an **artifact**, and the same shape of record is used for a sentence, an
+           extracted person, a citation, a date, a table row, a transcript segment, a
+           summary and a highlight alike.`,
+          `Each record carries the same set of fields, and it is that consistency which
+           makes the rest of the application possible:`,
+        ]},
+
+        { type: "list", ordered: false, items: [
+          `**The text itself**, both exactly as it appears and in a tidied-up form used for
+           matching.`,
+          `**Where it came from** -- document, page and character positions for text, row and
+           column for a spreadsheet, timestamp and speaker for audio and video. This is what
+           every jump-to-source click in the application follows.`,
+          `**Who produced it** -- which extractor, which version of it, and, if a model was
+           involved anywhere, which model and in what role. This is how the interface knows
+           to mark model-generated material as needing your review.`,
+          `**A confidence score**, and a status showing whether you have checked it or
+           corrected it.`,
+        ]},
+
+        { type: "prose", body: [
+          `A second table records the links between artifacts: this sentence is inside that
+           section, this mention refers to that person, this piece of evidence supports that
+           claim, this document cites that one. Links carry their own confidence and their
+           own record of where they came from, exactly as the artifacts do.`,
+
+          `Two indexes sit alongside the database and are kept in step with it. One is a
+           keyword index for exact-word searching. The other is a **ChromaDB** vector store,
+           which holds the numerical representations that make search-by-meaning work. Both
+           are keyed to the same record identifiers as the database, so a hit in one can be
+           lined up against a hit in the other rather than competing with it.`,
+
+          `Those identifiers are worked out from the source and the position rather than
+           being handed out in sequence, which means re-processing a document produces the
+           same identifiers as before. That is the unglamorous reason a citation you saved
+           into a note last month still lands on the right sentence after the document has
+           been re-imported.`,
+
+          `The rest of the store is caches: what has already been processed and at which
+           settings, previous analysis results, and previous retrieval results. They exist so
+           that nothing is computed twice.`,
         ]},
 
         { type: "figure",
           image: "intelligence-artifact-browser.png",
           alt: `The raw Artifacts view with one artifact selected, showing its full provenance record.`,
-          caption: `An artifact with its full provenance record.`,
+          caption: `A single record with everything it knows about its own origin.`,
           placeholder: `The raw Artifacts view with one artifact selected, showing its type, exact text,
                         locator (page and offsets), extractor name and version, created_by, confidence
                         and model role.` },
 
-        // ---- Ingestion ----
-        { type: "heading", level: 2, text: `The ingestion pipeline` },
-
-        { type: "prose", body: [
-          `When a source is added, a scheduler enqueues a dependency-aware sequence of
-           stages, each of which runs as a background worker and appears in the process
-           monitor.`,
-        ]},
-
-        { type: "code", language: "text", body:
-          `SOURCE_REGISTERED -> PARSED_BLOCKS -> SECTIONS (+ sentences) -> FULL_TEXT_INDEX
-  -> ENTITIES -> DATES -> CITATIONS -> TABLES -> CLAIMS -> EMBEDDINGS
-  -> [DEEP only: SUMMARIES, GRAPH_SEEDS, FIGURES]` },
-
-        { type: "diagram", id: "ingestion-pipeline",
-          caption: `The ingestion stages. Every stage is idempotent, and none of them calls a generative model.` },
-
-        { type: "prose", body: [
-          `Every stage compares a content hash and the identity of any model involved
-           against the stage status table and skips if it is already current. **No
-           generative model call occurs anywhere in this pipeline.** That is the single most
-           consequential fact about the intelligence layer: extraction is fast, repeatable,
-           free to re-run, and auditable, because nothing in it is a guess made by a
-           generative model.`,
-        ]},
-
-        { type: "table",
-          caption: `The four processing modes, which gate how much of the pipeline runs.`,
-          columns: [`Mode`, `Behaviour`],
-          rows: [
-            [`Minimal`, `Parse, segment and index only -- the fastest path to a searchable source`],
-            [`Balanced`, `Adds entities, dates, citations, tables, sentence classification and embeddings. The default`],
-            [`Deep`, `Adds extractive summaries, deterministic argument-relation seeding and figure handling`],
-            [`Manual`, `Nothing runs automatically; each stage is triggered explicitly`],
-          ]},
-
-        // ---- Extractors ----
-        { type: "heading", level: 2, text: `The deterministic extractor stack` },
-
-        { type: "prose", body: [
-          `Each extractor is registered rather than hardcoded, and plugins add their own to
-           the same stack with an explicit layer ordering.`,
-        ]},
-
-        { type: "definitions", items: [
-          { term: `Sentence segmentation`,
-            body: `Produces sentence artifacts with stable identifiers of the form
-                   block-id:s-index, plus character offsets. The sentence is the unit
-                   everything else in the system references.` },
-          { term: `Entity extraction`,
-            body: `A layered pipeline: a general spaCy named-entity layer that keeps all
-                   labels distinct, so people and organisations are never conflated; a domain
-                   pattern layer of metric regular expressions and a project glossary covering
-                   methods, datasets, concepts and works; a resolution layer that clusters
-                   mentions by normalised key across documents; and a relation layer that
-                   emits mentioned_in, co_occurs_with and affiliated_with edges.` },
-          { term: `Sentence classification`,
-            body: `Tags every sentence as claim, evidence or reasoning, with auxiliary labels
-                   for definition, methodology, citation-dense and quote, and a confidence. It
-                   uses a local ONNX encoder when one is installed and falls back to
-                   discourse-marker heuristics otherwise.` },
-          { term: `Extractive summarisation`,
-            body: `TextRank over a sentence graph, per section and per document. Abstractive
-                   summarisation exists but is opt-in and is a separate, explicitly run
-                   blueprint, because it involves a model and extractive summarisation does
-                   not.` },
-          { term: `Argument-relation seeding`,
-            body: `Scores evidence-and-reasoning-to-claim pairs using discourse markers and
-                   section co-location, writing supports, attacks and elaborates edges with no
-                   model involvement at all.` },
-          { term: `Citations`,
-            body: `Bibliography entries and in-text citations are extracted separately and
-                   then linked by a dedicated matcher.` },
-          { term: `Dates`,
-            body: `Extracted and normalised onto a project-wide timeline.` },
-          { term: `Tables`,
-            body: `Extracted as real queryable data rather than as text that looks like a
-                   table.` },
-          { term: `Structured querying`,
-            body: `Executes genuine aggregates -- sums, group-bys, filters -- over tabular
-                   datasets, which is why the language model is never asked to perform
-                   arithmetic.` },
-        ]},
-
-        { type: "diagram", id: "scalpel",
-          caption: `The division of labour: everything on the left is produced at ingest without a model; the model is asked only for what is on the right.` },
-
         // ---- Retrieval ----
-        { type: "heading", level: 2, text: `Retrieval` },
+        { type: "heading", level: 2, text: `Finding the right passage` },
 
         { type: "prose", body: [
-          `There is one retrieval primitive, and it runs in four stages.`,
+          `When you ask a question, something has to decide which parts of which documents
+           the model is allowed to see. Every feature that needs this -- chat, search,
+           analysis, the workspace tools, plugins -- calls the same piece of code, so an
+           improvement to it improves all of them at once. It works in four steps.`,
         ]},
 
         { type: "steps", items: [
-          { title: `Plan`,
-            body: `The query is analysed deterministically for intent and query entities.
-                   Numeric or aggregate questions are routed to the structured query executor
-                   instead of to text retrieval.` },
-          { title: `Signals`,
-            body: `Four retrievers run over the artifact store: vector, for semantic
-                   similarity from the local ChromaDB index; keyword, for FTS5 BM25 over the
-                   artifact full-text mirror; entity-anchored, which resolves query entities
-                   to canonical entities and expands project-wide through their mentions and
-                   edges; and structured, which performs type-boosted lookups with
-                   sentence-type filtering.` },
-          { title: `Fusion and reranking`,
-            body: `Signals are fused by reciprocal rank fusion on the shared artifact
-                   identifier, so a segment found by three signals outranks one found by a
-                   single signal. A sentence-type preference boost is applied, and an optional
-                   local ONNX cross-encoder reranks the head of the list, with a lexical
-                   fallback when that model is not installed.` },
-          { title: `Tiered packing`,
-            body: `Context is assembled under an explicit token budget, cheapest tier first:
-                   compact facts, then document summaries, then section summaries, then exact
-                   sentence text. The result is emitted as a citation-ready block carrying
-                   document, citation and artifact identifiers, so the answer built from it
-                   can be attributed.` },
+          { title: `Read the question`,
+            body: `The question is inspected without a model: what kind of question is it,
+                   and which names or terms does it mention? A question that is really
+                   arithmetic -- how many, what is the average -- is sent to the table
+                   queries instead of to text search, because that is a job for a database,
+                   not a language model.` },
+          { title: `Search four ways at once`,
+            body: `**By meaning**, using the vector index, which finds passages that say the
+                   same thing in different words. **By keyword**, which finds the exact terms
+                   and is better than any model at names, codes and figures. **By entity**,
+                   which recognizes a name in your question, looks up that person or
+                   organization and pulls in everywhere they appear across the project. And
+                   **by type**, which can insist on, say, evidence sentences rather than
+                   claims.` },
+          { title: `Combine the four lists`,
+            body: `The four searches return four lists ranked in four incompatible ways, so
+                   rather than try to compare their scores, Papyrus counts placements: a
+                   passage that three searches ranked highly beats one that a single search
+                   loved. If you have installed the optional reranker model, it takes a
+                   closer second look at the top of the combined list and re-orders it.` },
+          { title: `Fill the budget`,
+            body: `There is only so much text a model can be given, so the shortlist is
+                   packed into that space cheapest-first: bare facts, then document
+                   summaries, then section summaries, then the full text of individual
+                   sentences. Everything that goes in keeps its document and sentence
+                   identifiers attached, which is what allows the answer that comes back to
+                   be turned into clickable citations.` },
         ]},
 
         { type: "diagram", id: "retrieval-stages",
-          caption: `The four retrieval stages. Fusing on a shared artifact identifier is what allows the four signals to reinforce one another.` },
+          caption: `The four steps. Combining on a shared record identifier is what lets the four searches reinforce one another instead of competing.` },
 
         { type: "prose", body: [
-          `Results are cached against a query hash and a project-state hash. Retrieval is
-           scoped by a typed source scope, so a query can be limited to specific documents,
-           tags or plugin-contributed sources, and a context filter dialog exposes that
-           choice before a question is asked. Plugins can register additional retrieval
-           sources and complete retrieval providers, and can contribute a user-visible
-           toggle for their source in the AI settings.`,
+          `The result is cached, so asking the same question twice in an unchanged project
+           does not redo the work. Before asking anything you can narrow what is searched --
+           to particular documents, or tags, or sources a plugin has contributed -- from the
+           context filter. Plugins can add search sources of their own, or replace the whole
+           retrieval step, and can put their own on/off switch in the AI settings.`,
         ]},
 
         { type: "figure",
           image: "intelligence-retrieval-diagram.png",
           alt: `The retrieval context viewer showing what was retrieved and how it was assembled.`,
-          caption: `The four retrieval stages as the application reports them.`,
+          caption: `The four steps as the application reports them.`,
           placeholder: `An authored figure or a screenshot of the retrieval-context viewer: plan -> four
                         parallel signals (vector, keyword, entity-anchored, structured) -> RRF fusion and
                         reranking -> tiered packed context under a token budget.` },
@@ -1637,50 +1829,55 @@ window.SITE = {
         { type: "heading", level: 2, text: `Grounded graphs` },
 
         { type: "prose", body: [
-          `Document analysis produces a graph, not prose, and the contract that governs how
-           that graph is built is the most important safeguard in the application. It is
-           worth stating step by step.`,
+          `Running an analysis on a document produces a diagram rather than an essay: claims,
+           the evidence for them, and the reasoning joining the two. This is the one place
+           where a language model contributes to something you are then meant to trust, so
+           the rules around it are the strictest in the application. They are worth stating
+           one at a time.`,
         ]},
 
         { type: "list", ordered: true, items: [
-          `Papyrus first reconstructs readable canonical sentences from the source's layout
-           text, classifies grounded argument units, and builds a **complete deterministic
-           baseline graph** with stable node identifiers. This graph is usable on its own.`,
+          `**A complete diagram is built first, with no model at all.** The sentence labels
+           and argument links from import are enough to assemble a real, usable argument map
+           on their own. If you stopped here you would still have something.`,
 
-          `The language model is then asked only for a **small patch over that baseline** --
-           never for the whole graph. Nodes it does not mention remain exactly as extracted.`,
+          `**The model is only asked for corrections to that diagram**, never for the diagram
+           itself. It returns a small set of changes. Anything it does not mention is left
+           exactly as extracted.`,
 
-          `Quote text is **hydrated from the canonical source artifact** and is never
-           accepted from model output. This is what makes a fabricated quotation
-           structurally impossible rather than merely unlikely.`,
+          `**Quotes are never taken from the model's reply.** When the model says a piece of
+           evidence belongs to a claim, Papyrus goes and fetches the sentence text from the
+           source record itself. A made-up quotation is not unlikely here; it is impossible,
+           because there is no path by which model-written text can end up in a quote.`,
 
-          `The patch is validated. A patch that is sparse, fabricated, disconnected or
-           filled with placeholders is **never published**. Papyrus makes at most one
-           targeted repair call; if that also fails, it returns the complete deterministic
-           baseline rather than a degraded result.`,
+          `**The corrections are checked before they are accepted.** A reply that is too
+           thin, refers to things that are not in the document, leaves parts of the diagram
+           disconnected or is full of placeholder text is rejected. Papyrus tries once more
+           with a targeted request, and if that fails too it gives you the model-free version
+           rather than a damaged one.`,
 
-          `Sources that are short or evidence-poor are marked **limited coverage** and are
-           never padded with invented nodes. An honest small graph is preferred to a
-           plausible large one.`,
+          `**A thin source produces a thin diagram.** If a document is short or has little
+           evidence in it, the result is labeled limited coverage and left small. It is
+           never padded out with plausible-looking nodes to make it look better.`,
         ]},
 
         { type: "prose", body: [
-          `Three detail profiles -- Focused, Standard and Exhaustive -- control the target
-           size of the result; Standard aims at roughly twenty to forty proposition nodes
-           plus exact-quote evidence, when the source contains enough material to support
-           them. The result card reports claims, reasoning units, evidence, branches,
-           section coverage, validation status, cache status, origin, and the actual number
-           of language-model calls made, which is the number that tells a user how much of
-           what they are looking at was generated rather than extracted.`,
-          `Results are cached at the scope level. Editing source text, an annotation, a
-           prompt, a mode contract, a model or a detail profile invalidates only the
-           affected result.`,
+          `Three detail levels -- Focused, Standard and Exhaustive -- set how much to aim
+           for; Standard targets roughly twenty to forty claim and reasoning nodes plus their
+           supporting quotes, where the source has the material to support that many. When a
+           run finishes, the result card reports what was found, how much of the document was
+           covered, whether the checks passed, whether the answer came from the cache -- and
+           the number of model calls that were made, which is the figure that tells you how
+           much of what you are looking at was generated rather than extracted.`,
+          `Results are cached, and only the affected ones are thrown away when something
+           changes: editing the document, an annotation, a prompt, the model or the detail
+           level invalidates that result and leaves the rest alone.`,
         ]},
 
         { type: "figure",
           image: "intelligence-graph-view.png",
           alt: `The Graph view showing claim, evidence and reasoning nodes connected by typed edges.`,
-          caption: `The deterministic argument graph for one paper.`,
+          caption: `The argument graph for one paper.`,
           placeholder: `The Graph view of the Intelligence dock showing claim, evidence and reasoning nodes
                         connected by supports / attacks / elaborates edges, with a node selected showing
                         its exact quote and locator.` },
@@ -1689,54 +1886,56 @@ window.SITE = {
         { type: "heading", level: 2, text: `Analysis modes` },
 
         { type: "prose", body: [
-          `Analysis modes are registered blueprints rather than bespoke services. Question
-           answering, claim tracking, schema extraction and summarisation each chain the
-           same four operations: build a retrieval plan, retrieve artifacts, pack context,
-           and query the model with instructions to cite segment identifiers. They are
-           exposed to plugins through the intelligence API, so a plugin can register a mode
-           that behaves exactly like a built-in one.`,
-          `Analysis results can be pushed onto the Workspace canvas as a live graph, where
-           the workspace AI tools -- weakpoint detection, thematic clustering, outlining --
-           operate on them.`,
+          `Every analysis mode -- answering a question, tracking a claim, pulling out a
+           structured summary -- is built from the same four moves in the same order: work
+           out what to look for, retrieve it, pack it to fit, then ask the model, requiring it
+           to cite the sentence identifiers it used. None of them is a bespoke piece of code
+           with its own private pipeline, which is why they all behave consistently and why a
+           plugin can register a mode that works exactly like a built-in one.`,
+          `Any analysis result can be pushed onto the Workspace canvas as a graph you can
+           edit, where the workspace tools -- finding weak points, grouping by theme, building
+           an outline -- can be run over it.`,
         ]},
 
         // ---- Model roles ----
-        { type: "heading", level: 2, text: `Model roles and the pipeline-model installer` },
+        { type: "heading", level: 2, text: `Which model does what` },
 
         { type: "prose", body: [
-          `Rather than one setting naming "the model", models are assigned to roles: main
-           answer, fast worker, embedding, reranker, vision, transcription and extraction
-           repair, each with hardware-tier recommendations. A blueprint step names a role
-           and a set of required capabilities, not a model, so changing what is assigned to
-           a role changes every feature that depends on it at once.`,
-          `The optional pipeline models -- the spaCy English model, an ONNX cross-encoder
-           reranker, an ONNX sentence classifier and a date parser -- install from an AI
-           Setup screen in one click, with background download, checksum, tokenizer and
-           inference validation, atomic activation, hot reload, and repair, import, remove
-           and cancel controls. All of them are manifest-driven with pinned revisions and
-           absolute user-data paths. The stack deliberately avoids a PyTorch dependency;
-           small-model inference runs through ONNX Runtime.`,
+          `There is no single setting called "the model". Instead there are roles -- main
+           answer, fast worker, embedding, reranking, vision, transcription, and repairing
+           malformed output -- and you assign a model to each, with recommendations for
+           different classes of hardware. Features ask for a role rather than for a named
+           model, so pointing a role at something better upgrades every feature that uses it
+           at once.`,
+          `The small supporting models -- the spaCy language model, the reranker, the
+           sentence classifier and the date parser -- install from a setup screen in one
+           click. The download is verified, tested by actually running it once, and only then
+           switched on, without restarting the application; each one can also be repaired,
+           imported from a file, or removed. These deliberately run through ONNX Runtime
+           rather than PyTorch, which keeps the install small and makes them run acceptably
+           on a machine with no graphics card.`,
         ]},
 
         // ---- Intelligence dock ----
-        { type: "heading", level: 2, text: `Making it visible: the Intelligence dock` },
+        { type: "heading", level: 2, text: `Seeing it: the Intelligence dock` },
 
         { type: "prose", body: [
-          `An extraction pipeline the user cannot inspect is a black box wearing a
-           different hat. The Intelligence dock exists so that the store is browsable,
-           auditable and correctable, with views for Overview, Entities, Timeline, Claims &
-           Evidence, Graph, Citations, raw Artifacts and Runs.`,
-          `Every artifact shows where it came from -- source, page, extractor, model,
-           confidence -- and can be jumped to, verified, edited or deleted. A user edit
-           becomes a high-confidence fact, and retrieval and generated views prefer it over
-           the machine extraction it replaced. Correcting the store is therefore a durable
-           act rather than a note in the margin.`,
+          `An extraction pipeline you cannot look inside is just a black box with extra
+           steps. The Intelligence dock is where the store is made browsable, with views for
+           the overview, entities, the timeline, claims and evidence, the graph, citations,
+           the raw records, and the history of every processing run.`,
+          `Every entry shows where it came from -- source, page, which extractor, which model
+           if any, and how confident it was -- and can be jumped to, confirmed, edited or
+           deleted. A correction you make is stored as a high-confidence fact and is
+           preferred from then on over the machine's version, everywhere in the application.
+           Fixing something the extractor got wrong is therefore a permanent repair to the
+           project rather than a note to yourself.`,
         ]},
 
         { type: "figure",
           image: "intelligence-timeline.png",
-          alt: `The Timeline view showing normalised date mentions from several documents on a shared timeline.`,
-          caption: `Normalised dates across the corpus.`,
+          alt: `The Timeline view showing normalized date mentions from several documents on a shared timeline.`,
+          caption: `Dates from several documents on one timeline.`,
           placeholder: `The Timeline view showing date mentions from several documents placed on a shared
                         timeline, with a selected entry showing its source and span.` },
 
@@ -1744,40 +1943,40 @@ window.SITE = {
         { type: "heading", level: 2, text: `What is working, what is partial, what is missing` },
 
         { type: "prose", body: [
-          `The intelligence layer is the most complete part of the application, but it is
-           not finished. The [Status](status.html) page gives the full account; the summary
-           relevant here is as follows.`,
+          `The intelligence layer is the most finished part of the application, but it is not
+           finished. The [Status](status.html) page has the full account; the parts relevant
+           to this page are below.`,
         ]},
 
         { type: "callout", tone: "status", title: `Working`, body: [
-          `Deterministic ingestion end to end with idempotent caching and full provenance;
-           cross-document entity resolution with typed entities; fused multi-signal
-           retrieval with tiered packing and caching; artifact-keyed embeddings;
-           blueprint-backed analysis modes that cite segment identifiers; revisioned,
-           reviewable artifact storage with review state, stage-run history, evidence
-           assertions, typed cursor queries, provenance and settings hashes and resumable
-           backfill; and the Intelligence dock itself.`,
+          `The whole import sequence, with its caching and its record of where everything came
+           from. Recognizing the same person or organization across documents without
+           confusing categories. The four-way search, the combining step and the packing step.
+           Analysis modes that cite the sentences they used. Records that keep their history,
+           can be reviewed and corrected, and can be re-processed in the background without
+           losing anything. And the Intelligence dock itself.`,
         ]},
 
         { type: "callout", tone: "caution", title: `Partial`, body: [
-          `Embedding granularity stops at sentence, summary and block-chunk level;
-           per-paragraph embeddings are not separate. The ONNX sentence classifier is
-           bring-your-own, with the heuristic fallback active by default, and the reranker
-           installs but stays off unless present. Analysis-mode output currently streams to
-           the chat surface rather than into the Analysis tab as note bubbles. Deterministic
-           relation seeding writes edges to the artifact store, but model-produced
-           analysis-graph relations still land only in the workspace graph database.
-           Analysis evidence still travels as verbatim quotes, where referencing sentence
-           identifiers instead would materially cut token cost.`,
+          `Search-by-meaning works at the level of sentences, summaries and blocks; individual
+           paragraphs are not indexed separately. The sentence classifier is a model you have
+           to supply yourself, so the signal-word fallback is what runs by default, and the
+           reranker installs but stays switched off unless its model is present. Analysis
+           results currently appear in the chat panel rather than in the Analysis tab where
+           they belong. The links found without a model are saved to the main store, but the
+           ones the model proposes still end up only in the workspace, so the two live in
+           different places. And evidence is still passed around as full quoted text where
+           passing sentence identifiers would be considerably cheaper.`,
         ]},
 
         { type: "callout", tone: "note", title: `Not yet built`, body: [
-          `The auto-generated cross-corpus views -- a unified timeline, an entity knowledge
-           graph with per-entity dossiers, a contradiction map, a citation graph view and
-           cross-document claim comparison -- do not exist. The underlying data does; the
-           views do not. Feedback-driven retrieval that learns from which artifacts a user
-           accepts and cites is also unbuilt, as is the migration of the remaining model
-           features onto the artifact store as their single backbone.`,
+          `The views that would draw on the whole project at once -- one timeline across every
+           source, a browsable graph of entities with a page per person or organization, a map
+           of where sources contradict each other, a citation graph, and side-by-side
+           comparison of the same claim across documents -- do not exist yet. The data behind
+           them does; the screens do not. Search that learns from which results you actually
+           keep and cite is also unbuilt, as is moving the last few model features across onto
+           the artifact store so that everything genuinely runs off one backbone.`,
         ]},
 
       ],
@@ -2001,7 +2200,7 @@ plugin_data/<contributor_id>.json` },
            and nothing runs unless it is started by hand from settings and bound to a chosen
            private interface.`,
           `Because it exposes a live application over a network socket, its security
-           posture is described here in full rather than summarised.`,
+           posture is described here in full rather than summarized.`,
         ]},
 
         { type: "definitions", items: [
@@ -2071,7 +2270,7 @@ plugin_data/<contributor_id>.json` },
            citations, dates, tables, sentence classification, extractive summaries and
            seeded argument relations -- with idempotent caching and full provenance.`,
           `Cross-document entity resolution with typed entities, so a person and an
-           organisation are never conflated.`,
+           organization are never conflated.`,
           `Fused multi-signal retrieval with reciprocal rank fusion, tiered context packing,
            optional cross-encoder reranking, and caching.`,
           `Artifact-keyed embeddings, so a semantic hit reinforces the structured and
@@ -2121,7 +2320,7 @@ plugin_data/<contributor_id>.json` },
           `**Full migration onto the artifact store.** Chat, brainstorm, the workspace tools
            and citations have not yet been moved fully onto the artifact store as their
            single backbone.`,
-          `**Speaker diarisation** for audio and video.`,
+          `**Speaker diarization** for audio and video.`,
         ]},
 
         // ---- Known limitations ----
@@ -2174,7 +2373,7 @@ plugin_data/<contributor_id>.json` },
             [`OCR`, `Tesseract via pytesseract`, `Offline text recognition with word-level boxes, which is what gives scanned pages the same provenance as digital ones`],
             [`Graph algorithms`, `NetworkX`, `TextRank, layout and graph analysis without a bespoke implementation`],
             [`Tabular data`, `pandas, openpyxl`, `Real dataframes behind the Data Dock, so structured queries are genuine aggregates`],
-            [`Document parsing`, `python-docx, ebooklib, striprtf, lxml, BeautifulSoup`, `One parser per format, all normalised into the same block stream`],
+            [`Document parsing`, `python-docx, ebooklib, striprtf, lxml, BeautifulSoup`, `One parser per format, all normalized into the same block stream`],
             [`Reference management`, `pyzotero (plugin only)`, `Kept in the plugin, so the core has no reference-manager dependency`],
             [`Optional web companion`, `Starlette / Uvicorn ASGI`, `A small ASGI stack that stays dormant unless the companion is started`],
             [`Packaging`, `PyInstaller`, `Produces a self-contained desktop build`],

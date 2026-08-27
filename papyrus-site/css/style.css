@@ -1,9 +1,9 @@
 /* =====================================================================
    PAPYRUS SITE — STYLESHEET
    ---------------------------------------------------------------------
-   One file. Organised in banded sections:
+   One file. Organized in banded sections:
 
-     1. Tokens            — colours, spacing, fonts (edit here to retheme)
+     1. Tokens            — colors, spacing, fonts (edit here to retheme)
      2. Reset & base
      3. Layout            — header, nav column, main column, footer
      4. Typography
@@ -14,7 +14,7 @@
      8. Print
 
    The owner does not normally need to edit this file. All wording lives
-   in content.js. If you want to change the accent colour or the paper
+   in content.js. If you want to change the accent color or the paper
    tone, edit the tokens in section 1 only.
    ===================================================================== */
 
@@ -570,6 +570,14 @@ pre code {
   border-color: var(--rule);
 }
 
+/* Video shares every .img--* size with images. It gets a dark backing so
+   letterboxed clips look deliberate, and no zoom cursor: clicking a video
+   works its own controls, and its controls carry a fullscreen button. */
+video.img {
+  background: #000;
+  cursor: default;
+}
+
 /* Compact placeholder, for every image that is not a full-width figure. */
 .img-placeholder {
   display: block;
@@ -624,6 +632,90 @@ pre code {
 .gallery--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .gallery--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .gallery > .fig { margin-top: 0; }
+
+/* --- Lightbox: click any image to see it full screen --------------
+   Behavior lives in js/site.js. The scrim is deliberately dark in both
+   themes: it is a viewer, and a picture reads best against neutral
+   surroundings.
+
+   Videos are deliberately excluded: a click belongs to the player, and
+   the browser's own controls already offer fullscreen.
+   ------------------------------------------------------------------ */
+
+img.img { cursor: zoom-in; }
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3.4rem 1.5rem 2rem;
+  background: rgba(18, 18, 17, 0.94);
+}
+.lightbox[hidden] { display: none; }
+
+.lightbox__frame {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+  max-width: 100%;
+  max-height: 100%;
+  margin: 0;
+}
+
+.lightbox__img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 96vw;
+  max-height: 82vh;
+  object-fit: contain;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: #fff;
+  cursor: default;
+}
+
+.lightbox__caption {
+  max-width: 44rem;
+  font-family: var(--font-sans);
+  font-size: 0.84rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.74);
+  text-align: center;
+}
+.lightbox__caption[hidden] { display: none; }
+
+.lightbox__close {
+  position: absolute;
+  top: 1rem;
+  right: 1.1rem;
+  width: 2.3rem;
+  height: 2.3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: transparent;
+  color: rgba(255, 255, 255, 0.82);
+  font-family: var(--font-sans);
+  font-size: 1.45rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 120ms linear, border-color 120ms linear;
+}
+.lightbox__close:hover {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.6);
+}
+.lightbox__close:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
 
 /* --- Diagrams --- */
 .diagram {
@@ -843,7 +935,7 @@ pre code {
 /* ===== 8. Print ===================================================== */
 
 @media print {
-  .sidebar, .wip, .skip-link { display: none; }
+  .sidebar, .wip, .skip-link, .lightbox { display: none; }
   body { background: #fff; color: #000; }
   .layout { display: block; max-width: none; }
   a { color: #000; }

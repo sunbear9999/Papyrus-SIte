@@ -22,7 +22,7 @@ site's HTML, sitemap, and structured data remain the authoritative sources.
   index beside the project file.
 - Its central design rule is that extraction and indexing run without a
   generative model, and a language model is called only for tasks that require
-  judgement. Every such call is visible, editable, traceable, and attributable
+  judgment. Every such call is visible, editable, traceable, and attributable
   back to exact source text.
 
 ## Documentation pages
@@ -31,7 +31,7 @@ site's HTML, sitemap, and structured data remain the authoritative sources.
   session proceeds, and a map of the major subsystems.
 - [Motivation and Design Principles](https://papyrusresearch.org/why.html): the
   problems the project responds to and the design rules that follow.
-- [Feature Catalogue](https://papyrusresearch.org/features.html): every
+- [Feature Catalog](https://papyrusresearch.org/features.html): every
   capability, grouped by subsystem, with an account of how each works.
 - [How It Works](https://papyrusresearch.org/how-it-works.html): the layered
   architecture, the event bus, the registries, and the workflow engine.
@@ -61,7 +61,7 @@ travels as verbatim quotes.
 Not yet built: auto-generated cross-corpus views (unified timeline, entity
 knowledge graph with dossiers, contradiction map, citation graph view,
 cross-document claim comparison); feedback-driven retrieval; full migration of
-the remaining model features onto the artifact store; speaker diarisation.
+the remaining model features onto the artifact store; speaker diarization.
 
 Stated intention, not present fact: the project intends to be released as free
 and open source. No release date, version number, license, download, or

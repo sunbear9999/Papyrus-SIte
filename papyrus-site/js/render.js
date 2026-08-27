@@ -83,7 +83,7 @@
   };
 
   // Several block types accept either a plain string or an object with
-  // { text, image, alt, caption, placeholder }. This normalises both so
+  // { text, image, alt, caption, placeholder }. This normalizes both so
   // the rest of the renderer only has to handle one shape.
   const itemOf = (value) =>
     (value === null || value === undefined || typeof value === "string")
@@ -183,18 +183,26 @@
   }
 
   /* ---------------------------------------------------------------
-     Images — one code path for every picture on the site
+     Media — one code path for every picture and clip on the site
      ---------------------------------------------------------------
-     figure blocks, gallery items, images attached to a step / list item
+     figure blocks, gallery items, media attached to a step / list item
      / definition / card / callout / table cell, and the inline
-     ![alt](file.png) mark ALL end up in buildImage(). That is what makes
-     their behaviour identical everywhere:
+     ![alt](file.png) mark ALL end up in buildMedia(). That is what makes
+     their behavior identical everywhere:
 
        - the filename is looked up under images/;
        - if the file is not there yet, a described placeholder appears in
          its place rather than a broken-image icon;
        - dropping a correctly named file into images/ and reloading is
          all it ever takes to show the real picture.
+
+     VIDEO works exactly like an image. A filename ending .mp4, .m4v,
+     .webm, .ogv or .mov renders a <video> with playback controls in
+     place of the <img>, using the same image / alt / caption /
+     placeholder fields, the same sizes and the same placeholder. Two
+     extra fields are video-only: `poster` (a still to show before play)
+     and `autoplay: true` (a silent looping clip, automatically switched
+     off for readers who have asked for reduced motion).
 
      Four size variants:
        figure  full width of the figure column, big descriptive placeholder
@@ -206,19 +214,24 @@
   const IMAGE_BASE = "images/";
   const IMAGE_VARIANTS = ["figure", "block", "thumb", "inline"];
 
-  function imageSrc(name) {
+  // Filenames ending in one of these render as video rather than image.
+  const VIDEO_FILE = /\.(mp4|m4v|webm|ogv|mov)(?:[?#].*)?$/i;
+  const isVideo = (name) => VIDEO_FILE.test(tidy(name));
+
+  function mediaSrc(name) {
     const n = tidy(name).replace(/^\.?\//, "");
     return n.startsWith(IMAGE_BASE) ? n : IMAGE_BASE + n;
   }
 
   // The large dashed slug, used for full-width figures and galleries.
-  function fullPlaceholder(src, desc) {
+  // `kind` is "Screenshot" or "Video" so the slug names what is missing.
+  function fullPlaceholder(src, desc, kind) {
     const box = el("div", "fig-placeholder");
     box.setAttribute("role", "img");
-    box.setAttribute("aria-label", "Screenshot placeholder: " + (desc || src));
+    box.setAttribute("aria-label", kind + " placeholder: " + (desc || src));
 
     const label = el("p", "fig-placeholder__label");
-    label.textContent = "Screenshot placeholder";
+    label.textContent = kind + " placeholder";
 
     const file = el("p", "fig-placeholder__file");
     const code = el("code");
@@ -235,12 +248,12 @@
     return box;
   }
 
-  // The compact version, for images inside table cells, lists and prose.
+  // The compact version, for media inside table cells, lists and prose.
   // A <span> so that it stays valid inside a paragraph.
-  function compactPlaceholder(src, desc) {
+  function compactPlaceholder(src, desc, kind) {
     const box = el("span", "img-placeholder");
     box.setAttribute("role", "img");
-    box.setAttribute("aria-label", "Screenshot placeholder: " + (desc || src));
+    box.setAttribute("aria-label", kind + " placeholder: " + (desc || src));
 
     const file = el("span", "img-placeholder__file");
     file.textContent = src.replace(IMAGE_BASE, "");
@@ -254,10 +267,46 @@
     return box;
   }
 
-  function buildImage(spec, variant) {
+  function buildMedia(spec, variant) {
     const v = IMAGE_VARIANTS.indexOf(variant) >= 0 ? variant : "block";
-    const src = imageSrc(spec.image);
+    const src = mediaSrc(spec.image);
     const desc = tidy(spec.placeholder || spec.alt || "");
+    const video = isVideo(spec.image);
+
+    // The same missing-file placeholder for both kinds of media.
+    const onMissing = (node) => function () {
+      const box = v === "figure"
+        ? fullPlaceholder(src, desc, video ? "Video" : "Screenshot")
+        : compactPlaceholder(src, desc, video ? "Video" : "Screenshot");
+      box.classList.add("img-placeholder--" + v);
+      node.replaceWith(box);
+    };
+
+    if (video) {
+      const vid = el("video", "img img--" + v + " media--video");
+      // <video> has no alt attribute; the label plays the same part.
+      if (spec.alt) vid.setAttribute("aria-label", tidy(spec.alt));
+      vid.setAttribute("controls", "");
+      vid.setAttribute("preload", "metadata");
+      vid.setAttribute("playsinline", "");
+      if (spec.poster) vid.setAttribute("poster", mediaSrc(spec.poster));
+
+      // autoplay: true gives a silent looping clip, the video equivalent
+      // of an animated GIF. It is switched off for anyone who has asked
+      // their system for reduced motion.
+      const reduced = window.matchMedia &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (spec.autoplay === true && !reduced) {
+        vid.muted = true;
+        vid.setAttribute("muted", "");
+        vid.setAttribute("loop", "");
+        vid.setAttribute("autoplay", "");
+      }
+
+      vid.addEventListener("error", onMissing(vid));
+      vid.src = src; // set last, so the error listener is already attached
+      return vid;
+    }
 
     const img = el("img", "img img--" + v);
     img.alt = tidy(spec.alt || "");
@@ -266,13 +315,7 @@
     // viewport never attempts to load, so it never fires `error`, so the
     // placeholder would never appear. Correct placeholders matter more
     // here than deferring a handful of local files.
-    img.addEventListener("error", function onError() {
-      const box = v === "figure"
-        ? fullPlaceholder(src, desc)
-        : compactPlaceholder(src, desc);
-      box.classList.add("img-placeholder--" + v);
-      img.replaceWith(box);
-    });
+    img.addEventListener("error", onMissing(img));
     img.src = src; // set last, so the error listener is already attached
     return img;
   }
@@ -293,17 +336,17 @@
     return cap;
   }
 
-  // A complete <figure>: image plus optional numbered caption.
+  // A complete <figure>: image or video, plus optional numbered caption.
   function buildFigure(spec, state, variant, className) {
     const fig = el("figure", className || "fig");
-    fig.appendChild(buildImage(spec, variant || "figure"));
+    fig.appendChild(buildMedia(spec, variant || "figure"));
     if (spec.caption) fig.appendChild(figureCaption(spec.caption, state));
     return fig;
   }
 
-  // Attaches an item's optional image to the element it belongs to. Used
-  // by steps, list items, definitions, cards and callouts, all of which
-  // accept the same four image fields as a figure block.
+  // Attaches an item's optional image or video to the element it belongs
+  // to. Used by steps, list items, definitions, cards and callouts, all
+  // of which accept the same fields as a figure block.
   function appendItemImage(parent, item, state, variant) {
     if (!item || !item.image) return;
     parent.appendChild(
@@ -311,13 +354,13 @@
     );
   }
 
-  // Turns the slots left behind by the ![alt](file.png) mark into images.
+  // Turns the slots left behind by the ![alt](file.png) mark into media.
   function hydrateImages(root) {
     if (!root || !root.querySelectorAll) return;
     const slots = root.querySelectorAll("span.img-slot");
     for (let i = 0; i < slots.length; i++) {
       const slot = slots[i];
-      slot.replaceWith(buildImage({
+      slot.replaceWith(buildMedia({
         image: slot.dataset.image,
         alt: slot.dataset.alt,
         placeholder: slot.dataset.alt,
@@ -602,7 +645,7 @@
 
      Hand-authored inline SVG only. Use the `d-` classes defined in
      css/style.css so the diagrams follow the light and dark palettes;
-     never hardcode a colour. Captions come from content.js.
+     never hardcode a color. Captions come from content.js.
      ================================================================= */
 
   const ARROW_DEFS =
@@ -730,7 +773,7 @@
       '<text x="34" y="90" class="d-label">Layered entity extraction and resolution</text>' +
       '<text x="34" y="110" class="d-label">Sentence classification (claim / evidence / reasoning)</text>' +
       '<text x="34" y="130" class="d-label">Bibliography and in-text citation matching</text>' +
-      '<text x="34" y="150" class="d-label">Date normalisation onto a project timeline</text>' +
+      '<text x="34" y="150" class="d-label">Date normalization onto a project timeline</text>' +
       '<text x="34" y="170" class="d-label">Table extraction as queryable data</text>' +
       '<text x="34" y="190" class="d-label">TextRank extractive summaries</text>' +
       '<text x="34" y="210" class="d-label">Argument-relation seeding from discourse markers</text>' +
@@ -738,7 +781,7 @@
       '<rect x="420" y="20" width="200" height="210" class="d-box"/>' +
       '<text x="434" y="44" class="d-label-hd">Language model</text>' +
       '<text x="434" y="70" class="d-label">Final synthesis</text>' +
-      '<text x="434" y="90" class="d-label">Judgement calls</text>' +
+      '<text x="434" y="90" class="d-label">Judgment calls</text>' +
       '<text x="434" y="110" class="d-label">A small patch over the</text>' +
       '<text x="434" y="126" class="d-label">deterministic baseline graph</text>' +
       '<text x="434" y="152" class="d-label-sm">Low temperature.</text>' +
