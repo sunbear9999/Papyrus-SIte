@@ -2340,14 +2340,7 @@ plugin_data/<contributor_id>.json` },
            None have been measured to a standard that would justify publishing them.`,
         ]},
 
-        { type: "figure",
-          image: "status-test-suite.png",
-          alt: `Terminal output from the project's test suite.`,
-          caption: `The project's unit and integration test suite, which mirrors the source tree.`,
-          placeholder: `A terminal showing the test runner output with the passing test count -- evidence
-                        of the maintained suite. Optional: delete this figure block from content.js if
-                        you would rather not include it.` },
-
+        
         // ---- Colophon ----
         { type: "heading", level: 2, text: `Colophon: the technology stack` },
 
