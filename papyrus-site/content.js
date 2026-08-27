@@ -488,22 +488,21 @@ window.SITE = {
                         card showing the model-call count, or an authored figure.` },
 
         // ---- Why: principle 3 ----
-        { type: "heading", level: 2, text: `Nothing unsourced: provenance on every assertion` },
+        { type: "heading", level: 2, text: `Nothing unsourced` },
 
         { type: "prose", body: [
           `Every stored fact is an *artifact*, and every artifact carries a locator: page
            and character offsets for a document, row and column for tabular data,
            timestamp and speaker for audio and video. Alongside the locator it records a
            \`created_by\` field, the name and version of the extractor that produced it, the
-           model role and model name where one was involved, and a confidence.`,
-          `Because the locator is part of the record rather than a rendering detail, any
-           assertion the interface shows can be resolved back to the exact span it came
-           from, and clicking it navigates there. This is the same mechanism behind
+           model role and model name where one was involved, and a confidence score.`,
+          `Because the locator is part of the record, any
+           reference to it can be clicked to navigate there. This is the same mechanism behind
            citation bubbles in chat, result cards in search, nodes in the workspace,
            entries on the timeline and cells in the data dock -- all of them are artifacts
            with locators, so all of them jump.`,
           `The strongest form of this rule appears in document analysis. Quote text shown
-           in an argument map is hydrated from the canonical source artifact and is never
+           in an argument map is populated from the source artifact and is never
            accepted from model output, which makes a fabricated quotation structurally
            impossible rather than merely unlikely.`,
         ]},
@@ -516,28 +515,34 @@ window.SITE = {
            manager -- including system prompts, JSON-schema enforcement text,
            structured-output preambles and post-processing instructions. All of them
            appear in the Prompt Editor and can be rewritten without touching code.
-           Hardcoding prompt text anywhere in the application is treated as a defect.`,
-          `Every model invocation produces a trace record capturing the exact rendered
+           No prompt is hardcoded anywhere in the application.`,
+          `Every model call produces a trace record capturing the exact rendered
            prompt as sent, the retrieved context chunks, and the raw response. A trace
-           button appears on every AI output. A call that produces no trace is a bug by
-           definition.`,
+           button appears on every AI output, ensuring the user can always review what
+           exact prompt was sent to the model for any given query`,
           `Every background job appears in the process monitor with its status and can be
            aborted. Every model assignment, capability filter, context setting and backend
            option is exposed in settings, with available models and blueprints read from
-           registries at runtime rather than hardcoded. The intent is that a user who
+           registries at runtime rather than hardcoded. This way a user who
            wants to know what the software just did can find out completely, from the
-           interface, without reading the source.`,
+           UI, without reading the sourcecode. The specific local model backend used
+           as well as the exact weights themselves are also fully up to the user
+           ensuring the best model can be used for a given task, and any model
+           containing biases can be removed`,
+           `To further combat the issue of bias in the internal weights of a model, Papyrus contains
+           a built-in Bias Lab, that uses the [Libra Methodology](https://arxiv.org/abs/2502.01679) 
+           to test and identify any internal biases a LLM may hold.`
         ]},
 
         // ---- Why: principle 5 ----
         { type: "heading", level: 2, text: `One knowledge base, one retrieval path` },
 
         { type: "prose", body: [
-          `There is exactly one artifact store and exactly one retrieval primitive. Chat,
+          `There is exactly one artifact store and exactly one retrieval backend. Chat,
            brainstorm, the analysis modes, entity discovery, citations, workspace tools
            and plugins all call the same \`retrieve(...)\`. No feature parses, embeds or
            prompts on its own.`,
-          `The alternative -- a pipeline per feature -- fails in a predictable way. Each
+          `The alternative -- a seperate pipeline per feature -- fails in a predictable way. Each
            pipeline drifts, each caches separately, each has its own notion of what a
            chunk is, and an improvement to retrieval quality has to be implemented several
            times to be felt anywhere. Under a single path, a better reranker improves chat,
@@ -550,65 +555,45 @@ window.SITE = {
         { type: "heading", level: 2, text: `Extensible by construction` },
 
         { type: "prose", body: [
-          `Every extension point the core uses is exposed to plugins through one
-           controlled API facade. Plugins register blueprints, workflow step types, entity
+          `Every function call the main application uses is exposed to plugins through one
+           controlled API facade. Plugins can register blueprints, workflow step types, entity
            types, source formats, viewers, retrieval sources and providers, artifact
            producers, analysis modes and templates, docks, toolbar buttons, context-menu
            actions, shortcuts, themes, AI output widgets, database tables and
            import/export contributors.`,
-          `The test applied to the design is simple: anything the core can do, a plugin
-           can do. Three plugins ship with the application specifically as worked examples
-           of that claim, one of which -- Zotero integration -- is implemented with no
+          `The idea is that anything the main app can do, a plugin
+           can do. Three example plugins have been made, one of which -- Zotero integration -- is implemented with no
            reference to Zotero anywhere in the main application. Deleting its directory
            removes the feature with no side effects.`,
-          `Uniformity is what makes this affordable. Everything pluggable lives in a
-           registry created once at startup and exposed through both the application
-           context and the plugin API, and every registry that accepts plugin
-           contributions supports removal by plugin identifier.`,
+          `Plugins can be added, removed, enabled and disabled at runtime.
+          They can also be granted or denied permissions, ensuring plugins can only ever
+          access what the user wants them to. The [Extensibility](extending.html) page describes the plugin system in detail.`,
         ]},
 
-        // ---- Why: separation of concerns, briefly ----
-        { type: "heading", level: 2, text: `A structural rule underneath all of them` },
-
-        { type: "prose", body: [
-          `One further rule is architectural rather than philosophical, and it is what
-           keeps the other six enforceable: the backend is headless and may never import
-           the interface. All business logic, extraction, inference and database access
-           live in \`core/\`. The PySide6 interface reaches them only through a typed
-           application context, service calls and an event bus. Any operation that could
-           take more than about fifty milliseconds runs off the interface thread.`,
-          `The practical effect is that the same services can be driven by the desktop
-           interface, by a blueprint, by a plugin or by the optional web companion without
-           any of them being a special case. [How It Works](how-it-works.html) describes
-           the layering in detail.`,
-        ]},
 
         // ---- Why: non-goals ----
         { type: "heading", level: 2, text: `Non-goals` },
 
         { type: "prose", body: [
-          `Stating what a project is not for is as useful as stating what it is for. None
-           of the following are being attempted.`,
+          `In addition to the above stated goals, there are also several non-goals that guide the design and implementation of Papyrus.`,
         ]},
 
         { type: "definitions", items: [
           { term: `A cloud service`,
             body: `There is no server component, no account, no synchronisation service and
-                   no hosted processing. The optional web companion serves the project open
-                   on the desktop to a browser on the same private network, and is off
-                   unless deliberately started.` },
+                   no hosted processing. Everything works solely on the users device` },
           { term: `A replacement for a reference manager`,
             body: `Papyrus extracts, matches and formats citations for the material in a
                    project, and integrates with Zotero through a plugin. It is not trying to
                    become the place a researcher's whole library lives.` },
           { term: `A chat wrapper`,
-            body: `Conversation is one surface among several, and it is built on the same
+            body: `Conversation is one tool among several, and it is built on the same
                    retrieval and workflow machinery as everything else. A version of Papyrus
-                   with the chat tab removed would still do most of what it does.` },
+                   with the chat tab removed would still do most of what it currently does.` },
           { term: `A general-purpose writing assistant`,
-            body: `The writing surfaces exist to assemble material that is already in the
-                   project -- notes, quotes, outlines, works-cited entries -- rather than to
-                   generate prose on a subject the project knows nothing about.` },
+            body: `The writing dock exist to assemble material that is already in the
+                   project such as notes, quotes, outlines, works-cited entries. It is not designed
+                   to write for you` },
         ]},
 
       ],
@@ -622,24 +607,19 @@ window.SITE = {
 
     features: {
       title: `Feature Catalogue`,
-      subtitle: `Every capability the application has, grouped by subsystem, with an account of how each one works.`,
+      subtitle: `Every capability the application has, grouped by subsystem, with a brief description of how each one works.`,
       sections: [
 
         { type: "prose", body: [
-          `This page is the complete catalogue. Three subsystems carry enough
-           architectural weight to have their own pages -- the
-           [intelligence layer](intelligence.html), the
-           [application architecture](how-it-works.html) and
-           [extensibility](extending.html) -- and are summarised here rather than
-           repeated. Anything incomplete is marked where it appears, and collected on the
-           [Status](status.html) page.`,
+          `This page is the complete catalogue. The [intelligence layer](intelligence.html) and 
+          [plugin architecture](extending.html) are further described on their respective pages.`,
         ]},
 
         /* ---- 1. Projects and sources ---- */
         { type: "heading", level: 2, text: `Projects and sources` },
 
         { type: "prose", body: [
-          `A project is a \`.pdfproj\` file together with two sibling directories. The
+          `A project is a \`.pdfproj\` file together with two related directories. The
            project database, an SQLite file, holds documents, annotations, notes, tags,
            citations, workspaces, graph nodes and edges, chat history, datasets and every
            intelligence artifact. Beside it sit \`<project>.pdfproj_chroma_db/\`, the local
@@ -648,13 +628,10 @@ window.SITE = {
           `Plugins may declare their own project-scoped tables. Those tables are created
            when a project opens and are never dropped when a plugin is unloaded, so
            disabling a plugin cannot destroy data that was collected through it. A
-           per-project processing policy controls how deeply each source is processed.`,
-          `Papyrus is not a PDF reader with extras attached. Every listed format supports
+           per-project processing policy controls how deeply each source is processed on import.`,
+          `Papyrus is not solely a PDF reader. Every listed format supports
            the same core features: highlighting, notes, analysis, universal search and
-           jump-to-source. A source format registry maps each type to its extensions, MIME
-           types, category, parser or data loader and availability; there are no hardcoded
-           extension checks anywhere in the codebase, which is what allows a plugin to add
-           a format with full feature parity.`,
+           jump-to-source.d`,
         ]},
 
         { type: "table",
@@ -663,7 +640,7 @@ window.SITE = {
           rows: [
             [`PDF`, `.pdf`, `Full support: page rendering, text layer, highlighting, and OCR for scanned pages`],
             [`Word`, `.docx`, `Headings and tables recognised as document structure`],
-            [`Legacy Word`, `.doc`, `Requires LibreOffice on the system; shown as unavailable with an explanation if absent`],
+            [`Legacy Word`, `.doc`, '--'],
             [`EPUB`, `.epub`, `Chapters and headings recognised`],
             [`Plain text`, `.txt`, `--`],
             [`Markdown`, `.md`, `Hash-prefixed headings recognised as structure`],
@@ -676,9 +653,9 @@ window.SITE = {
           columns: [`Category`, `Extensions`, `Notes`],
           rows: [
             [`Tabular data`, `.csv, .tsv, .xlsx`,
-             `Opens as a read-only preview; one button promotes it to an editable Data Dock dataset. For spreadsheets the active sheet is loaded`],
+             `Opens as a read-only preview; can be edited in the data dock. For spreadsheets the active sheet is loaded`],
             [`Video`, `.mp4 .mov .mkv .webm .avi .m4v .wmv .flv .mpg .mpeg .3gp .ogv .ts`,
-             `Transcribed in the background by an offline speech-to-text engine, producing searchable captions and timestamp-accurate jump-to-source`],
+             `Transcribed in the background by an offline speech-to-text engine, producing searchable captions and timestamp-accurate jump-to-source. These transcriptions are embeded for the LLM to search`],
             [`Audio`, `.mp3 .wav .m4a .flac .ogg .aac .wma .opus`,
              `Same transcription path as video. Speaker turns are captured; named-speaker resolution is not yet implemented`],
             [`Images`, `.png .jpg .jpeg .tiff .bmp .webp`,
@@ -686,11 +663,11 @@ window.SITE = {
           ]},
 
         { type: "prose", body: [
-          `Under the surface, a parser registry converts every source into one normalised
-           stream of document blocks, and the artifact service normalises those blocks into
-           a single artifact segment stream. Everything downstream -- indexing, extraction,
+          `Once imported, a parser registry converts every source into one normalised
+           stream of document blocks, and the artifact service extracts entities from these blocks.
+            All tools -- indexing, extraction,
            retrieval, analysis -- sees that one stream and does not know or care which
-           format produced it.`,
+           format it comes from.`,
         ]},
 
         { type: "figure",
@@ -704,25 +681,20 @@ window.SITE = {
         { type: "heading", level: 2, text: `Reading and annotation` },
 
         { type: "prose", body: [
-          `The PDF viewer is built on PyMuPDF and renders pages in a worker process, so a
+          `The PDF viewer is built on PyMuPDF and renders pages in a lazy manner, so a
            slow page never blocks the interface. It provides zoom in, out and reset, an
            in-document search bar with match navigation, a page indicator, text selection
-           and region selection -- the last of which is also how a table is lifted out of a
-           page into the Data Dock.`,
-          `Reading mode is a separate, reflowable view for long-form reading. It applies
-           global display settings for typography, measure and spacing, paginates, and
-           runs a text-cleaning pass that repairs the artifacts PDF layout leaves behind:
-           hyphenation across line breaks, column bleed, and repeated header and footer
-           noise. Non-PDF text documents open in a shared read-only reflowable viewer with
-           zoom and fuzzy jump-to-source matching.`,
+           and region selection. Tables in a pdf can also be automatically extracted into data dock for user
+           viewing and editing, and charts can be extracted and saved as workspace nodes`,
+          `Reading mode is a separate way to read documents, which provides a line at a time with 
+          a highlighted word, moving at a user-set reading speed, allowing a user to read in a more focused manner.`,
         ]},
 
         { type: "definitions", items: [
           { term: `Highlighting`,
-            body: `A managed colour palette with a colour-organiser dialog, so a project can
-                   keep a consistent meaning for each colour.` },
+            body: `Any text, regardless of the format it comes from, can be highlighted in various colors.` },
           { term: `Annotation notes`,
-            body: `Notes attached either to a highlight or to an arbitrary passage.` },
+            body: `Notes attached to a highlight.` },
           { term: `Universal jump-to-source`,
             body: `Clicking any citation bubble, note, search result, data cell or graph node
                    navigates to its exact origin: page and span for documents, timestamp for
@@ -735,8 +707,7 @@ window.SITE = {
             body: `The same annotation and jump-to-source behaviour applied to media
                    sources.` },
           { term: `CSV preview viewer`,
-            body: `A read-only view of a spreadsheet with a single button that promotes the
-                   file into an editable dataset.` },
+            body: `A read-only view of a spreadsheet with a button to edit in Data Dock.` },
           { term: `Document explorer`,
             body: `The project source list, with right-click actions for rename, remove, run
                    OCR, extract pages, evaluate source, and any action a plugin has
@@ -755,29 +726,8 @@ window.SITE = {
         { type: "heading", level: 2, text: `The intelligence layer` },
 
         { type: "prose", body: [
-          `The intelligence layer is the backbone of the application and is treated at
-           length on [its own page](intelligence.html). In summary: when a source is added,
-           a dependency-aware scheduler runs a sequence of background stages that parse it,
-           segment it into sentences, index it for full-text search, and extract entities,
-           dates, citations, tables and sentence classifications, before embedding the
-           result. No generative model call occurs anywhere in that pipeline.`,
-          `Everything extracted is an artifact in one relational knowledge base, with a
-           companion edge table for relations and a vector index keyed by the same
-           identifiers. Artifact identifiers are deterministic, so re-running a stage
-           produces the same identifiers and nothing downstream breaks. Every stage
-           compares a content hash and model identity against a cache table and skips if it
-           is already current.`,
-          `Four processing modes gate how much of that pipeline runs: Minimal parses,
-           segments and indexes only; Balanced adds entities, dates, citations, tables,
-           sentence classification and embeddings, and is the default; Deep adds extractive
-           summaries, deterministic argument-relation seeding and figure handling; Manual
-           runs nothing automatically and leaves every stage to be triggered by hand.`,
-          `The Intelligence dock makes all of it visible and editable, with views for
-           Overview, Entities, Timeline, Claims & Evidence, Graph, Citations, raw Artifacts
-           and Runs. Every artifact shows where it came from -- source, page, extractor,
-           model, confidence -- and can be jumped to, verified, edited or deleted. A user
-           edit becomes a high-confidence fact that retrieval and generated views prefer
-           over the machine extraction it replaced.`,
+          `The intelligence layer is the backbone of the application and is described at
+           length on [its own page](intelligence.html). `
         ]},
 
         { type: "figure",
@@ -793,38 +743,28 @@ window.SITE = {
         { type: "heading", level: 2, text: `Retrieval and search` },
 
         { type: "prose", body: [
-          `One retrieval primitive serves the whole application. A query is first analysed
-           deterministically for intent and query entities, and numeric or aggregate
-           questions are routed to the structured query executor rather than to text
-           retrieval, so the language model is never asked to do arithmetic. Four
-           retrievers then run over the artifact store -- vector, keyword, entity-anchored
-           and structured -- and their results are fused by reciprocal rank fusion on the
-           shared artifact identifier, so a segment found by three signals outranks one
-           found by a single signal. An optional local cross-encoder reranks the head of
-           the list. Context is then packed under an explicit token budget, cheapest tier
-           first. The [Intelligence Layer](intelligence.html) page describes each stage.`,
-          `Retrieval is scoped by a typed source scope, so a query can be restricted to
-           particular documents, tags or plugin-contributed sources. A context filter
-           dialog exposes that directly: before asking a question, the user chooses exactly
-           which documents, tags and sources the AI is allowed to search.`,
+          `The project can be searched in a variety of ways, inclduing searching an individual
+          source, searching the entire project, or running a semantic similarity search over the 
+          vector database, allowing users to find relevant content based on meaning rather than just keywords. 
+           A context filter
+           dialog allows the user to choose exactly
+           which documents, tags and sources the AI is allowed to search. A semantic similarity search
+           based on the vector database is then combined with lightweight rerankers to provide optimal context to the LLM.`,
         ]},
 
         { type: "definitions", items: [
           { term: `Local retrieval search`,
-            body: `Returns citation cards carrying the source document, page, the matched
+            body: `Uses semantic similarty to return citation cards carrying the source document, page, the matched
                    passage and a relevance score. Each card jumps to its span.` },
           { term: `External academic search shortcuts`,
             body: `Query shortcuts for JSTOR, Google Scholar, Reddit, news search and an
                    arbitrary custom URL, returning cards that open in the system browser.
-                   These are link constructions, not scraped results.` },
-          { term: `AI query generator`,
-            body: `Takes a stated research goal, formulates several targeted queries, runs
-                   them, and returns the combined results as cards. An optional mode also
+                   This allows users to quickly access external academic resources to find additional sources` },
+          { term: `Research Assistant query generator`,
+            body: `Takes a stated research goal, formulates several targeted keywords, 
+              and returns the results as cards with clickable links to search the keywords on academic sources. An optional mode also
                    scans the citations of retrieved papers to surface related works not yet
-                   in the project.` },
-          { term: `Result caching`,
-            body: `Fused and reranked candidates are cached against a query hash and a
-                   project-state hash, so repeating a question does not repeat the work.` },
+                   in the project. This makes finding sources for a given topic much easier, as the LLM can help formulate optimal boolean keyword searches` },
         ]},
 
         { type: "figure",
@@ -833,14 +773,14 @@ window.SITE = {
           caption: `Retrieval search results as citation cards.`,
           placeholder: `The Search tab showing a query and a list of citation cards with source document,
                         page number, highlighted passage and relevance score, plus the external-source
-                        buttons and the AI query generator field.` },
+                        buttons and the Research Assistant query generator field.` },
 
         /* ---- 5. Document analysis ---- */
         { type: "heading", level: 2, text: `Document analysis` },
 
         { type: "prose", body: [
           `The Analysis tab runs structured extraction over a document and produces a
-           graph rather than prose. Three templates ship with the application, and custom
+           graph. Three templates ship with the application, and custom
            templates can be authored in the app and appear alongside them; plugins can
            contribute templates as well.`,
         ]},
@@ -858,24 +798,10 @@ window.SITE = {
           ]},
 
         { type: "prose", body: [
-          `Each template declares which node types the model may create, which relation
-           types are permitted, per-chunk token limits, maximum entity counts, and the
-           specific chunk-level and synthesis-level prompts it uses. Three detail profiles
-           -- Focused, Standard and Exhaustive -- control target size; Standard aims at
-           roughly twenty to forty proposition nodes plus exact-quote evidence when the
-           source contains enough material to support them.`,
-          `The grounding contract that makes the output trustworthy is described in full
-           under [grounded graphs](intelligence.html#grounded-graphs). The short version:
-           a complete deterministic baseline graph is built first, the model is asked only
-           for a small patch over it, quotes are hydrated from the source artifact rather
-           than accepted from model output, and a patch that is sparse, fabricated,
-           disconnected or placeholder-filled is never published. Results are cached at
-           scope level, and editing source text, an annotation, a prompt, a mode contract,
-           a model or a detail profile invalidates only the affected result.`,
-          `The result card reports claims, reasoning units, evidence, branches, section
-           coverage, validation status, cache status, origin, and the actual number of
-           language-model calls that were made. Results can be pushed onto the Workspace
-           canvas as a live graph.`,
+          `Each template declares which node and relationtypes the model may create, ensuring a structured graph is generated for any template`,
+          `The way this feature ensures trustworthy outputs is described in full
+           under [grounded graphs](intelligence.html#grounded-graphs).  Results can be added onto the Workspace
+           canvas as an editable graph.`,
         ]},
 
         { type: "figure",
@@ -890,14 +816,12 @@ window.SITE = {
         { type: "heading", level: 2, text: `The research dock` },
 
         { type: "prose", body: [
-          `A single dockable panel gathers seven tabs. They share the project, the
-           retrieval path and the workflow engine; the separation between them is one of
-           task rather than of machinery.`,
+          `A single dock that holds most AI-powered research tools in six different tabs.`,
         ]},
 
         { type: "definitions", items: [
           { term: `Chat`,
-            body: `Multi-turn conversation grounded in the project. Answers stream token by
+            body: `A conversational interface where answers stream token by
                    token and render inline citation bubbles showing document, page and
                    quoted text, each of which jumps to the source. History persists in the
                    project. A context-filter button restricts which documents, tags and
@@ -910,17 +834,10 @@ window.SITE = {
             body: `Template and mode selection, detail profile, run control, and the grounded
                    result card.` },
           { term: `Brainstorm`,
-            body: `Synthesis and ideation over the corpus rather than factual question
-                   answering: generating hypotheses, arguments and connections between
-                   material in the project.` },
-          { term: `Research Agent`,
-            body: `An autonomous multi-step agent. It plans, selects tools, executes
-                   blueprint steps, records tool runs, keeps a working memory of recent
-                   artifacts, checkpoints its state, and can be interrupted. Sessions
-                   persist in the project.` },
+            body: `A brainstorm assistant to help generate hypotheses, arguments and connections between
+                   material in the project, as well as help plan next steps in research.` },
           { term: `Custom Tools`,
-            body: `Every saved blueprint whose mount points include this tab appears here as
-                   a one-click tool with an input form generated from its declared inputs.` },
+            body: `A place to run custom user-created AI tools made in the visual workflow builder.` },
           { term: `Blueprint Editor`,
             body: `The visual workflow builder, described below.` },
         ]},
@@ -938,18 +855,17 @@ window.SITE = {
 
         { type: "prose", body: [
           `The workspace is a visual canvas on which nodes are ideas, claims, entities,
-           quotes or findings, and edges are typed relations. A project can hold several
-           named workspaces, switched from a selector. Nodes carry a title, a type that is
-           colour-coded by the ontology, a body, tags, and the source document and page
+           quotes or findings, and edges are typed relations between nodes. A project can hold several
+           named workspaces, to keep related ideas together. Nodes carry a title, a type , a body, tags, and the source document and page
            they came from; double-clicking opens a full node editor. Edges carry a relation
            type -- supports, refutes or contradicts, part_of, derived_from, next_step, and
            any type registered in the ontology.`,
           `Authoring is manual as well as generated. Right-click adds a node, dragging
            from a node's port draws an edge, and edges are edited or deleted from their own
            context menu. The canvas supports zoom, pan, select-all, undo and redo,
-           recentre, export, and an automatic force-directed layout. Filters by source
-           document and by tag hide nodes rather than deleting them. Source-evaluation
-           scores appear as badges on source nodes.`,
+           recenter, export, and an automatic decluttering to improve readability. Nodes can be filtered by 
+           source or tag for a cleaner view, and node types contain unique properties. A claim node, for example
+           , displays the number of supporting and refuting citations connected to it.`,
         ]},
 
         { type: "figure",
@@ -961,24 +877,19 @@ window.SITE = {
                         showing its properties panel.` },
 
         { type: "prose", body: [
-          `Four AI tools operate on the canvas. All four are entries in a tool registry, so
-           a plugin can add its own alongside them and it will appear in the same
-           context menu.`,
+          `Four prebuilt AI tools operate on the canvas, and plugins and user-built blueprints can add more.`,
         ]},
 
         { type: "definitions", items: [
           { term: `Find Weakpoints`,
-            body: `Flags claims that have no supporting evidence or citation edges, listing
-                   each one with a reason and a suggestion of what evidence would resolve
-                   it.` },
-          { term: `Colour Organise by Theme`,
-            body: `Clusters nodes semantically and recolours them by cluster, which is what
-                   makes a theme running across several documents visible at a glance.` },
+            body: `Anaylzes the structure of the selected nodes to determine areas of weakness in the research, suggests additional information to look for.` },
+          { term: `Find New Connections`,
+            body: `Looks for similarites between existing nodes and` },
           { term: `Generate Outline`,
             body: `Turns a selection of nodes and the edges between them into a hierarchical
-                   textual outline ordered by logical flow.` },
-          { term: `Outline Workspace Graph`,
-            body: `The same operation applied to the entire canvas rather than a selection.` },
+                   textual outline to help organize thoughts.` },
+          { term: `Fill Graph`,
+            body: `Anaylzes the selected nodes, and searches for possible evidence to fill gaps, and strengthen claims` },
           { term: `Declutter & Simplify`,
             body: `Merges semantically duplicate nodes, removes low-confidence edges,
                    shortens overlong titles, and re-lays out the result.` },
@@ -997,20 +908,13 @@ window.SITE = {
 
         { type: "prose", body: [
           `Every AI feature in Papyrus, without exception, is a **blueprint** executed by a
-           shared runner. This is an architectural rule rather than a convention: no
-           service, dock or feature is permitted to call a model directly. Chat is a
+           shared runner. Chat is a
            blueprint. Analysis modes are blueprints. Workspace tools are blueprints. A
            workflow a user assembles in the visual editor is the same kind of object as the
            ones that ship with the application, and runs through the same machinery.`,
-          `A blueprint is a named list of steps with a description, mount points that
-           decide where it appears in the interface, and active contexts. A step has an
-           identifier, a step type, inputs resolved from a shared state dictionary, an
-           output key, model options -- model, required capabilities, prompt key, system
-           prompt, temperature, token limits, JSON mode, output schema -- interface options,
-           any context to auto-inject, permissions, and optional true and false branches.
-           Model selection uses a token resolved at runtime from application state rather
-           than a hardcoded model name, and a step can declare required capabilities such
-           as vision so that only capable models are offered.`,
+          `A blueprint is a named list of steps with a description, such as RAG queries,
+          LLM queries, python scripts, and document chunking. Each step has unique inputs and outputs, and the runner passes the output of one step to the next. 
+          Step properties, such as allowed context for an LLM query, are set in the visual editor.`,
           `Over forty step types are registered. Plugins register additional step types
            through the same protocol, and they appear in the visual editor automatically.`,
         ]},
@@ -1035,13 +939,12 @@ window.SITE = {
            inspector. The blueprint's name, description, mount points and active contexts
            are set on the same canvas and saved into the project. The editor supports
            duplicate, delete, zoom to cursor, fit-to-view and several wiring modes. An AI
-           builder assistant will draft a blueprint from a plain-English description of a
+           builder assistant can draft a blueprint from a plain-English description of a
            workflow, which the user then edits by hand.`,
           `Output is configured by attaching an interface output node that describes a
            format and a target. Targets include a floating overlay, the custom tools tab,
            the chat area, the search tab, the Data Dock's workflow panel and the notes
-           dock's workflow panel. Inline citation weaving can be enabled per step by
-           pointing at the state key that holds the retrieval results.`,
+           dock's workflow panel.`,
         ]},
 
         { type: "table",
@@ -1076,14 +979,13 @@ window.SITE = {
            prompts, JSON-schema enforcement text, structured-output preambles,
            post-processing instructions, citation and graph-building prompts and synthesis
            prompts are all registered entries in a prompt manager, referenced by key from
-           the steps that use them. Hardcoding prompt text is treated as a defect. The
+           the steps that use them. The
            Prompt Editor exposes every registered prompt for editing, so tone, format,
            schema instructions or behaviour can be changed without touching code, and
            plugins can register their own prompts or override an existing one by key.`,
-          `Every model invocation produces a trace record capturing the exact rendered
+          `Every model call produces a trace record capturing the exact rendered
            prompt as sent, the retrieved context chunks, and the raw response. A trace
-           button appears on every AI output. A call that produces no trace is, by
-           definition, a bug.`,
+           button appears on every AI output. `,
         ]},
 
         { type: "figure",
@@ -1098,8 +1000,7 @@ window.SITE = {
            status and allows any of them to be aborted. Because any operation over roughly
            fifty milliseconds is offloaded to a background worker enqueued in a process
            registry, the monitor is a complete picture of what the application is doing at
-           any moment, rather than a partial one. Non-blocking status is reported through
-           toast notifications.`,
+           any moment.`,
         ]},
 
         { type: "figure",
@@ -1126,14 +1027,12 @@ window.SITE = {
            named-entity recognition and linguistics, and a date parser. An AI Setup screen
            installs them in one click, with background download, checksum, tokenizer and
            inference validation, atomic activation, hot reload, and repair, import, remove
-           and cancel controls. All optional models are manifest-driven with pinned
-           revisions and absolute user-data paths. The same screen manages backends and
-           text-to-speech voices.`,
-          `Notably, the stack avoids a PyTorch dependency entirely; all small-model
-           inference runs through ONNX Runtime.`,
+           and cancel controls.`,
           `The LLM Controls settings tab exposes every model selection, capability filter,
            context setting and backend option the system uses. Available models and
            blueprints are read from registries at runtime and never hardcoded.`,
+           `This allows the user to retain full control over what models they run, how they run, and when they're used,
+           while the one click installer ensures its easy to get the best models for each task.`
         ]},
 
         { type: "figure",
@@ -1151,16 +1050,14 @@ window.SITE = {
            Bibliography extraction parses reference lists into structured entries; in-text
            citation extraction finds citation markers in the body; and a dedicated citation
            matcher links the two, so an in-text marker resolves to its full reference. A
-           citation graph service builds the citation network across the corpus from the
-           result.`,
-          `The Citation Dock lists every citation record in the project. Formatting is
-           available in APA, MLA and Chicago for both in-text citations and full entries,
-           with one-click works-cited generation. Diagnostics in the dock report matching
-           coverage and list unresolved references, which is more useful than a silent
-           partial result.`,
-          `The bundled Zotero plugin adds library browsing and a smart matching dialog that
-           links Zotero metadata to project documents, connecting through the local API
-           first where one is available.`,
+           citation graph service builds the citation network across the project from the
+           result. This allows the user to easily see which citations a source relies on the most, 
+           which sources are most cited, and what information is used from a given citation`,
+          `The Citation Dock builds citations for sources present in the dock, allowing users 
+          to easily manage and format their citations, as well as provide any missing information such
+          as publication year.`,
+          `The bundled Zotero plugin helps improve the citation dock by allowing the user to import
+          citation data for a source from their Zotero library directly, ensuring accurate citations.`,
         ]},
 
         { type: "figure",
@@ -1175,28 +1072,17 @@ window.SITE = {
 
         { type: "prose", body: [
           `An offline source evaluator scores documents on structural and metadata signals
-           through a pluggable scoring-metric registry: DOI and journal resolution,
-           retraction checking, the presence of metadata, the presence of a reference list,
-           and any further metric that has been registered. Nothing about the scoring
-           involves a language model.`,
-          `Evaluation is event-driven. It triggers after extraction completes, reads
-           metadata from the citation record first and only falls back to scanning the PDF,
-           and re-scores automatically when a citation record is updated. Background
-           evaluations never interrupt with a dialog; a manually requested run may prompt
-           for missing metadata. Each evaluation persists a score together with a ledger of
-           the individual metric results, so the number is explainable rather than opaque,
-           and workspace source nodes display it as a badge.`,
-          `Separately, a bias evaluation step and detector dialog assess text against
-           bundled bias reference datasets and render a scored assessment card.`,
+           through a scoring-metric registry: it checks the DOI against a bundled retracted paper database,
+           looks for the presence of metadata, journal name, and references, and checks the journal against an
+           offline list of predatory journals. The result is a heuristic evaluation score that can 
+           allow the user to quickly recognize low-quality sources`
         ]},
 
         /* ---- 13. Data dock ---- */
         { type: "heading", level: 2, text: `Data dock` },
 
         { type: "prose", body: [
-          `The Data Dock is the quantitative side of the application: a spreadsheet-like
-           surface where tabular material becomes real data rather than text that happens
-           to contain numbers.`,
+          `The Data Dock is the quantitative side of the application: it serves as a mini speadsheet editor for reading data and building charts`,
         ]},
 
         { type: "definitions", items: [
@@ -1204,9 +1090,7 @@ window.SITE = {
             body: `CSV, TSV and XLSX files load as editable datasets, or open as a read-only
                    preview until promoted with a single button.` },
           { term: `Extraction from PDFs`,
-            body: `A region of a PDF page can be selected and turned into a grid, with
-                   mapping controls for headers and column types. This is how a table
-                   printed in a paper becomes queryable data.` },
+            body: `A region of a PDF page can be selected and extracted into structured, editable tabular data` },
           { term: `Grid editing`,
             body: `Copy, cut, paste, undo, redo, clear, and computed columns such as sum and
                    average.` },
@@ -1214,10 +1098,6 @@ window.SITE = {
             body: `Chart generation directly from the grid.` },
           { term: `Jump to source`,
             body: `Any cell navigates back to the page and region it was extracted from.` },
-          { term: `Structured queries`,
-            body: `Real aggregates, group-bys and filters executed over datasets. This is
-                   where the retrieval planner routes numeric questions, which is why the
-                   model is never asked to perform arithmetic.` },
           { term: `First-class project data`,
             body: `Datasets are visible to retrieval like any other source.` },
           { term: `Extension points`,
@@ -1237,21 +1117,19 @@ window.SITE = {
 
         { type: "definitions", items: [
           { term: `Tags`,
-            body: `Applied to documents, highlights, notes and workspace nodes, managed in a
-                   tag manager, usable as a filter everywhere, with a tag-relatives view for
-                   related tags.` },
+            body: `Can be applied to documents, highlights, notes and workspace nodes, managed in a
+                   tag manager, usable as a filter everywhere, allowing similar information to be grouped.` },
           { term: `Notes dock`,
             body: `Every note and every discovered entity in one filterable list, with
                    jump-to-source and a workflow panel for running blueprints against the
                    current selection. Entity discovery reads the canonical entity artifacts
                    produced at ingestion rather than re-extracting them.` },
-          { term: `Quick note`,
-            body: `Note capture from anywhere in the application.` },
           { term: `Scratchpad`,
             body: `An unstructured jotting surface for material that does not yet belong
                    anywhere.` },
           { term: `Dictionary dock`,
-            body: `Save, look up and manage word definitions inside the project.` },
+            body: `Save, look up and manage word definitions inside the project. Comes bundled with an English Dictionary, but allows
+            uploading custom dictionaries, so words in any language or specific to any particular field can be quickly defined while reading a source` },
         ]},
 
         /* ---- 15. Utility tools ---- */
@@ -1269,43 +1147,35 @@ window.SITE = {
           { term: `Essay writer dock`,
             body: `A long-form writing surface inside the project, next to the material it
                    draws on.` },
-          { term: `Command palette`,
-            body: `Keyboard-driven access to every registered action.` },
           { term: `Keybinding registry`,
-            body: `A single source of truth for every built-in shortcut, fully remappable in
-                   settings, with plugin shortcuts held in their own scope. Scopes cover
+            body: `A single place to manage keyboard shortcuts, fully remappable in
+                   settings, with plugin shortcuts held in their own scope. Covers
                    global, PDF viewer, video player, workspace, data dock, intelligence,
                    research, notes, citations, writing, dictionary, OCR and
                    text-to-speech.` },
           { term: `Theme manager`,
-            body: `Token-based themes with full create, read, update and delete support,
+            body: `Themes with full create, read, update and delete support,
                    propagated to plugin widgets as well as core interface elements. Plugins
                    can contribute themes.` },
           { term: `Dock and layout managers`,
             body: `Dockable panels with saved layouts and persistent splitters.` },
-          { term: `Focused dialogs`,
-            body: `Extract pages, metadata request, entity editor, workspace review and
-                   others, each reachable from the surface it belongs to.` },
         ]},
 
         /* ---- 16. Help and tutorials ---- */
         { type: "heading", level: 2, text: `Help and tutorials` },
 
         { type: "prose", body: [
-          `A help registry holds several dozen authored topics across Getting Started,
+          `A help registry holds authored topics across Getting Started,
            Reading & Annotation, Chat & AI Research, Document Analysis, Workspace,
            Workflows & Blueprints, Organisation, AI & Prompts, Tools, Data Dock and Help
            itself. The Help Center dialog browses them and searches their full text.`,
-          `Two shortcuts connect the interface to that registry directly. Pressing F1 with
-           a panel focused opens the topic for that control. Shift+F1 enters a "what's
+          `Shift+F1 enters a "what's
            this" mode in which clicking any element jumps straight to its help topic.`,
-          `Interactive tutorials are driven by a tutorial engine that overlays the real
+          `Interactive tutorials overlay the real
            interface, highlights real targets, advances on genuine user actions or a next
-           button, and records progress. Tutorials reference a registry of named interface
-           targets rather than screen coordinates, so they keep pointing at the right
-           widget when the layout changes. Every non-trivial control is expected to have a
+           button, and records progress. Every non-trivial control is expected to have a
            help topic, and plugins register their own topics and tutorials in their own
-           namespace.`,
+           namespace. Tutorials and a detailed help menu ensure the app remains easy to use`,
         ]},
 
         { type: "figure",
@@ -1322,7 +1192,7 @@ window.SITE = {
        PAGE: HOW IT WORKS  (how-it-works.html)
        ================================================================= */
 
-    "how-it-works": {
+    /*"how-it-works": {
       title: `How It Works`,
       subtitle: `The layered architecture, the event bus, the registries, and the workflow engine that executes every AI feature.`,
       sections: [
@@ -1550,7 +1420,7 @@ window.SITE = {
 
       ],
     },
-
+*/
     /* =================================================================
        PAGE: INTELLIGENCE LAYER  (intelligence.html)
        ================================================================= */
