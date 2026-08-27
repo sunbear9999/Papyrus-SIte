@@ -216,11 +216,13 @@ window.SITE = {
             body: `Chat with the research assistant to get direct answers about the sources from a locally-running model.
             All answers provide citation bubbles that link the user to the exact information the LLM used when formulating an answer` },
           { title: `Automate`,
-            body: `Capture any repeated procedure as a blueprint in the visual editor and
-                   run it afterwards as a one-click custom tool.` },
+            body: `Create custom workflow blueprints using the visual editor. These workflows can be 
+            run on any source in any project, and make it easy to automate research steps like extracting and 
+            normalizing data from PDFs` },
           { title: `Write`,
-            body: `Assemble notes, quotes, outlines and works-cited entries into the shape
-                   the final piece of writing needs.` },
+            body: `Use the in-app writing editor to synthesize notes, diagrams, and data into one complete
+            writing piece. You can easily copy and paste quotes and their citations from the visual workspace 
+            into your final document` },
         ]},
 
         { type: "figure",
@@ -232,12 +234,15 @@ window.SITE = {
                         canvas.` },
 
         // ---- Overview: what is distinctive ----
-        { type: "heading", level: 2, text: `What is distinctive about it` },
+        { type: "heading", level: 2, text: `Distinctive features` },
 
         { type: "prose", body: [
-          `Six architectural commitments separate Papyrus from the common pattern of
-           chunking a document, embedding the chunks, and pasting the nearest ones into a
-           prompt. Each is argued in full on the Motivation page.`,
+          `Papyrus is designed to do more than just chunk sources into a vector database
+          that is then fed into an LLM. It is designed to use a variety of determinstic and 
+          machine learning tools in combination with generative AI to create a more holistic overview
+          of a source while keeping all extracted information linked to the source, auditable, and keep
+          the researcher involved in the process.
+          The design is described in full on the Philosophy page.`,
         ]},
 
         { type: "list", ordered: false, items: [
@@ -257,7 +262,8 @@ window.SITE = {
            [Nothing unsourced](why.html#nothing-unsourced-provenance-on-every-assertion)`,
 
           `**Every prompt is editable and every call is traced.** There are no hidden
-           prompts and no hidden model calls; an untraceable call is treated as a defect.
+           prompts and no hidden model calls; Papyrus aims to eliminate the "black box"
+           associated with most generative AI tools.
            [Transparency](why.html#transparency-and-user-control)`,
 
           `**One knowledge base and one retrieval path.** Chat, analysis, citations,
@@ -266,7 +272,8 @@ window.SITE = {
            [One retrieval path](why.html#one-knowledge-base-one-retrieval-path)`,
 
           `**Anything the application does, a plugin can do.** Every extension point the
-           core uses is exposed through a single controlled API.
+           core uses is exposed through a single controlled API. This allows the app to be
+           expanded to meet research needs in a variety of fields.
            [Extensible by construction](why.html#extensible-by-construction)`,
         ]},
 
