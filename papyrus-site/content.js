@@ -1220,9 +1220,11 @@ window.SITE = {
         { type: "definitions", items: [
           { term: `Loading and promotion`,
             body: `CSV, TSV and XLSX files load as editable datasets, or open as a read-only
-                   preview until promoted with a single button.` },
+                   preview until promoted with a single button.`, image: "features/promote.mp4", alt: "An Open CSV being promoted to an editable dataset",
+                  caption: "Opening a CSV file for editing" },
           { term: `Extraction from PDFs`,
-            body: `A region of a PDF page can be selected and extracted into structured, editable tabular data` },
+            body: `A region of a PDF page can be selected and extracted into structured, editable tabular data`, image: "features/extract.mp4", alt: "A PDF tables being extracted in Data Dock",
+                   caption: "Extracting data from a PDF" },
           { term: `Grid editing`,
             body: `Copy, cut, paste, undo, redo, clear, and computed columns such as sum and
                    average.` },
@@ -1237,12 +1239,7 @@ window.SITE = {
                    parsers, grid actions and file loaders from plugins.` },
         ]},
 
-        { type: "figure",
-          image: "features-data-dock.png",
-          alt: `The Data Dock showing a table extracted from a PDF and a chart generated from it.`,
-          caption: `A table extracted from a PDF into an editable dataset.`,
-          placeholder: `The Data Dock with a grid of extracted tabular data, a chart generated from it,
-                        and -- if possible -- the source PDF region selection visible alongside.` },
+        
 
         /* ---- 14. Tags, notes, dictionary ---- */
         { type: "heading", level: 2, text: `Tags, notes and the dictionary` },
@@ -1250,7 +1247,8 @@ window.SITE = {
         { type: "definitions", items: [
           { term: `Tags`,
             body: `Can be applied to documents, highlights, notes and workspace nodes, managed in a
-                   tag manager, usable as a filter everywhere, allowing similar information to be grouped.` },
+                   tag manager, usable as a filter everywhere, allowing similar information to be grouped.` ,
+                    image: "features/tag.png", alt: "The Tag Manager Open with several tags", caption: "The tag manager with several tags"},
           { term: `Notes dock`,
             body: `Every note and every discovered entity in one filterable list, with
                    jump-to-source and a workflow panel for running blueprints against the
@@ -1258,10 +1256,11 @@ window.SITE = {
                    produced at ingestion rather than re-extracting them.` },
           { term: `Scratchpad`,
             body: `An unstructured jotting surface for material that does not yet belong
-                   anywhere.` },
+                   anywhere.`, image: "features/scratch.png", alt: "The Scratchpad open with filler text", caption: "The Scratchpad for miscellaneous notes" },
           { term: `Dictionary dock`,
             body: `Save, look up and manage word definitions inside the project. Comes bundled with an English Dictionary, but allows
-            uploading custom dictionaries, so words in any language or specific to any particular field can be quickly defined while reading a source` },
+            uploading custom dictionaries, so words in any language or specific to any particular field can be quickly defined while reading a source` , 
+            image: "features/dict.mp4", alt: "The Dictionary Dock being used to identify Hawaiian Words from an uploaded dictionary", caption: "The Dictionary Dock using a custom loaded dictionary to identify Hawaiian Words" },
         ]},
 
         /* ---- 15. Utility tools ---- */
@@ -1284,11 +1283,11 @@ window.SITE = {
                    settings, with plugin shortcuts held in their own scope. Covers
                    global, PDF viewer, video player, workspace, data dock, intelligence,
                    research, notes, citations, writing, dictionary, OCR and
-                   text-to-speech.` },
+                   text-to-speech.`, image: "features/shortcuts.png", alt: "The Keybinding Registry showing available shortcuts", caption: "The Keybinding Registry for managing keyboard shortcuts" },
           { term: `Theme manager`,
             body: `Themes with full create, read, update and delete support,
                    propagated to plugin widgets as well as core interface elements. Plugins
-                   can contribute themes.` },
+                   can contribute themes.` , image: "features/theme.png", alt: "Editing a custom theme", caption: "The Theme Manager editing a custom theme" },
           { term: `Dock and layout managers`,
             body: `Dockable panels with saved layouts and persistent splitters.` },
         ]},
@@ -1311,9 +1310,9 @@ window.SITE = {
         ]},
 
         { type: "figure",
-          image: "features-help-center.png",
+          image: "features/tutorial.png",
           alt: `The Help Center dialog, or the tutorial overlay highlighting a real interface element.`,
-          caption: `The Help Center and an in-app tutorial overlay.`,
+          caption: `An interactive tutorial`,
           placeholder: `The Help Center dialog with the topic list and a topic rendered, or the tutorial
                         overlay highlighting a real UI element with its instruction bubble.` },
 
@@ -2053,7 +2052,7 @@ window.SITE = {
         ]},
 
         { type: "figure",
-          image: "extending-plugin-manager.png",
+          image: "table/11.png",
           alt: `The Plugin Manager dialog listing installed plugins with separate enablement and network controls.`,
           caption: `The plugin manager, with network permission separate from enablement.`,
           placeholder: `The Plugin Manager dialog listing the bundled plugins with enablement toggles,
