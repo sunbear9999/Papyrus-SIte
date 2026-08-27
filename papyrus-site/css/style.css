@@ -527,6 +527,104 @@ pre code {
   color: var(--ink-muted);
 }
 
+/* --- Images outside a full-width figure ---------------------------
+   Four size variants, set by the renderer:
+     .img--figure  full width of the figure column (a figure block)
+     .img--block   fills whatever contains it (card, callout, cell)
+     .img--thumb   small, capped width (the default in a table cell)
+     .img--inline  line-height sized, for an icon inside a sentence
+   ------------------------------------------------------------------ */
+
+.img {
+  border: 1px solid var(--rule-strong);
+  background: var(--paper-raised);
+}
+.img--figure {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+/* Natural size, capped at the container: a small image is not blown up
+   and blurred. Use this variant (size: "block") for anything narrower
+   than the text column. */
+.img--block {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  margin: 0.5rem 0 0;
+}
+.img--thumb {
+  display: block;
+  width: 100%;
+  max-width: 13rem;
+  height: auto;
+  margin: 0.4rem 0 0;
+}
+.img--inline {
+  display: inline-block;
+  height: 1.35em;
+  width: auto;
+  vertical-align: -0.28em;
+  margin: 0 0.15em;
+  border-color: var(--rule);
+}
+
+/* Compact placeholder, for every image that is not a full-width figure. */
+.img-placeholder {
+  display: block;
+  margin: 0.45rem 0 0;
+  padding: 0.55rem 0.6rem;
+  border: 1px dashed var(--rule-strong);
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  line-height: 1.45;
+  color: var(--ink-faint);
+  text-align: center;
+}
+.img-placeholder--thumb { max-width: 13rem; }
+.img-placeholder--inline {
+  display: inline-block;
+  margin: 0 0.15em;
+  padding: 0.05em 0.4em;
+  vertical-align: baseline;
+}
+.img-placeholder__file {
+  display: block;
+  font-family: var(--font-mono);
+  color: var(--ink-muted);
+  word-break: break-all;
+}
+.img-placeholder__desc { display: block; margin-top: 0.2rem; }
+.img-placeholder--inline .img-placeholder__desc { display: none; }
+
+/* Figures nested inside a step, list item, definition, card or cell.
+   Same figure, smaller vertical footprint so the host block stays
+   readable while its picture is still a placeholder. */
+.fig--nested,
+.fig--gallery { margin: 0.7rem 0 0.3rem; max-width: none; }
+.fig--cell { margin: 0; max-width: none; }
+
+.fig--nested figcaption,
+.fig--gallery figcaption { margin-top: 0.45rem; font-size: 0.78rem; }
+.fig--cell figcaption { margin-top: 0.35rem; font-size: 0.75rem; }
+
+.fig--nested .fig-placeholder,
+.fig--gallery .fig-placeholder { min-height: 150px; padding: 1.4rem 1rem; }
+.fig--cell .fig-placeholder { min-height: 0; padding: 0.9rem 0.7rem; }
+
+/* --- Gallery: a grid of captioned images --- */
+.gallery {
+  display: grid;
+  gap: 1.5rem 1.2rem;
+  max-width: var(--measure-wide);
+  margin: 1.8rem 0;
+}
+.gallery--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.gallery--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.gallery--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.gallery > .fig { margin-top: 0; }
+
 /* --- Diagrams --- */
 .diagram {
   max-width: var(--measure-wide);
@@ -715,6 +813,9 @@ pre code {
 
   .cards { grid-template-columns: minmax(0, 1fr); }
 
+  .gallery--3,
+  .gallery--4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
   .diagram svg { min-width: 26rem; }
 }
 
@@ -732,6 +833,10 @@ pre code {
 
   .fig-placeholder { padding: 1.6rem 1rem; }
   .diagram__frame { padding: 0.7rem; }
+
+  .gallery--2,
+  .gallery--3,
+  .gallery--4 { grid-template-columns: minmax(0, 1fr); }
 }
 
 

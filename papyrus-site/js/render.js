@@ -33,7 +33,7 @@
       .replace(/'/g, "&#39;");
 
   /* Inline markup subset, applied AFTER escaping:
-       `code`   **bold**   *italic*   [label](url)
+       `code`   **bold**   *italic*   [label](url)   ![alt](file.png)
      Nothing else is supported by design. */
   function inline(str) {
     let out = escapeHtml(str);
@@ -43,7 +43,20 @@
     // easier than finding the character on a keyboard.
     out = out.replace(/(^|\s)--(?=\s|$)/g, "$1—");
 
-    // Links first, so their labels are not eaten by the emphasis rules.
+    // Images, before links, so the link rule does not eat the [alt] part.
+    //   ![alt](file.png)         fills the width of whatever contains it
+    //   ![alt](file.png thumb)   small, for table cells and lists
+    //   ![alt](file.png inline)  line-height sized, for an icon mid-sentence
+    // These become empty slots that hydrateImages() turns into real <img>
+    // elements, so they get the same missing-file placeholder as every
+    // other image on the site.
+    out = out.replace(
+      /!\[([^\]]*)\]\(\s*([^)\s]+)(?:\s+(block|thumb|inline))?\s*\)/g,
+      (m, alt, file, size) =>
+        `<span class="img-slot" data-image="${file}" data-alt="${alt}" data-size="${size || "block"}"></span>`
+    );
+
+    // Links next, so their labels are not eaten by the emphasis rules.
     out = out.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (m, label, url) => {
       const external = /^https?:\/\//i.test(url);
       const attrs = external ? ' target="_blank" rel="noopener"' : "";
@@ -60,7 +73,22 @@
   // Collapse the whitespace that indented template literals introduce.
   const tidy = (str) => String(str ?? "").replace(/\s*\n\s*/g, " ").trim();
 
-  const setInline = (node, str) => { node.innerHTML = inline(tidy(str)); return node; };
+  // Every piece of user text on the site goes through here, which is why
+  // an ![alt](file.png) mark works in any field: prose, list items, step
+  // bodies, definitions, table cells, callouts, captions, card text.
+  const setInline = (node, str) => {
+    node.innerHTML = inline(tidy(str));
+    hydrateImages(node);
+    return node;
+  };
+
+  // Several block types accept either a plain string or an object with
+  // { text, image, alt, caption, placeholder }. This normalises both so
+  // the rest of the renderer only has to handle one shape.
+  const itemOf = (value) =>
+    (value === null || value === undefined || typeof value === "string")
+      ? { text: value }
+      : value;
 
   const slug = (text) =>
     tidy(text)
@@ -155,58 +183,146 @@
   }
 
   /* ---------------------------------------------------------------
-     Figures — the placeholder swap
+     Images — one code path for every picture on the site
      ---------------------------------------------------------------
-     The <img> is inserted normally. If the file is not present in
-     images/, the browser fires `error` and we replace the image with a
-     described placeholder box. Dropping a correctly named file into
-     images/ and reloading is all it takes to show the real screenshot.
+     figure blocks, gallery items, images attached to a step / list item
+     / definition / card / callout / table cell, and the inline
+     ![alt](file.png) mark ALL end up in buildImage(). That is what makes
+     their behaviour identical everywhere:
+
+       - the filename is looked up under images/;
+       - if the file is not there yet, a described placeholder appears in
+         its place rather than a broken-image icon;
+       - dropping a correctly named file into images/ and reloading is
+         all it ever takes to show the real picture.
+
+     Four size variants:
+       figure  full width of the figure column, big descriptive placeholder
+       block   fills whatever contains it (a card, a callout, a cell)
+       thumb   small, capped width — the default inside a table cell
+       inline  line-height sized, for an icon in the middle of a sentence
      --------------------------------------------------------------- */
 
-  function renderFigure(section, index) {
-    const fig = el("figure", "fig");
-    const src = "images/" + section.image;
+  const IMAGE_BASE = "images/";
+  const IMAGE_VARIANTS = ["figure", "block", "thumb", "inline"];
 
-    const img = el("img");
-    img.alt = tidy(section.alt || "");
+  function imageSrc(name) {
+    const n = tidy(name).replace(/^\.?\//, "");
+    return n.startsWith(IMAGE_BASE) ? n : IMAGE_BASE + n;
+  }
+
+  // The large dashed slug, used for full-width figures and galleries.
+  function fullPlaceholder(src, desc) {
+    const box = el("div", "fig-placeholder");
+    box.setAttribute("role", "img");
+    box.setAttribute("aria-label", "Screenshot placeholder: " + (desc || src));
+
+    const label = el("p", "fig-placeholder__label");
+    label.textContent = "Screenshot placeholder";
+
+    const file = el("p", "fig-placeholder__file");
+    const code = el("code");
+    code.textContent = src;
+    file.appendChild(code);
+
+    box.append(label, file);
+
+    if (desc) {
+      const d = el("p", "fig-placeholder__desc");
+      d.textContent = "Should show: " + desc;
+      box.appendChild(d);
+    }
+    return box;
+  }
+
+  // The compact version, for images inside table cells, lists and prose.
+  // A <span> so that it stays valid inside a paragraph.
+  function compactPlaceholder(src, desc) {
+    const box = el("span", "img-placeholder");
+    box.setAttribute("role", "img");
+    box.setAttribute("aria-label", "Screenshot placeholder: " + (desc || src));
+
+    const file = el("span", "img-placeholder__file");
+    file.textContent = src.replace(IMAGE_BASE, "");
+    box.appendChild(file);
+
+    if (desc) {
+      const d = el("span", "img-placeholder__desc");
+      d.textContent = desc;
+      box.appendChild(d);
+    }
+    return box;
+  }
+
+  function buildImage(spec, variant) {
+    const v = IMAGE_VARIANTS.indexOf(variant) >= 0 ? variant : "block";
+    const src = imageSrc(spec.image);
+    const desc = tidy(spec.placeholder || spec.alt || "");
+
+    const img = el("img", "img img--" + v);
+    img.alt = tidy(spec.alt || "");
     img.decoding = "async";
-    // Note: deliberately NOT loading="lazy". A lazy image that never enters
-    // the viewport never attempts to load, so it never fires `error`, so the
-    // placeholder below would never appear. Correct placeholders matter more
+    // Deliberately NOT loading="lazy". A lazy image that never enters the
+    // viewport never attempts to load, so it never fires `error`, so the
+    // placeholder would never appear. Correct placeholders matter more
     // here than deferring a handful of local files.
     img.addEventListener("error", function onError() {
-      const box = el("div", "fig-placeholder");
-      box.setAttribute("role", "img");
-      box.setAttribute("aria-label", "Screenshot placeholder: " + tidy(section.placeholder || section.alt || ""));
-
-      const label = el("p", "fig-placeholder__label");
-      label.textContent = "Screenshot placeholder";
-
-      const file = el("p", "fig-placeholder__file");
-      const code = el("code");
-      code.textContent = src;
-      file.appendChild(code);
-
-      const desc = el("p", "fig-placeholder__desc");
-      desc.textContent = "Should show: " + tidy(section.placeholder || "");
-
-      box.append(label, file, desc);
+      const box = v === "figure"
+        ? fullPlaceholder(src, desc)
+        : compactPlaceholder(src, desc);
+      box.classList.add("img-placeholder--" + v);
       img.replaceWith(box);
     });
     img.src = src; // set last, so the error listener is already attached
-    fig.appendChild(img);
+    return img;
+  }
 
-    if (section.caption) {
-      const cap = el("figcaption");
+  // Numbering rule, and the only one worth remembering: an image that has
+  // a `caption` is numbered automatically, in the order it appears on the
+  // page. An image without a caption is never numbered. Insert one in the
+  // middle and everything below renumbers itself.
+  function figureCaption(text, state) {
+    const cap = el("figcaption");
+    if (state) {
+      state.figureCount += 1;
       const num = el("span", "fig__num");
-      num.textContent = "Figure " + index + ". ";
+      num.textContent = "Figure " + state.figureCount + ". ";
       cap.appendChild(num);
-      const rest = el("span");
-      setInline(rest, section.caption);
-      cap.appendChild(rest);
-      fig.appendChild(cap);
     }
+    cap.appendChild(setInline(el("span"), text));
+    return cap;
+  }
+
+  // A complete <figure>: image plus optional numbered caption.
+  function buildFigure(spec, state, variant, className) {
+    const fig = el("figure", className || "fig");
+    fig.appendChild(buildImage(spec, variant || "figure"));
+    if (spec.caption) fig.appendChild(figureCaption(spec.caption, state));
     return fig;
+  }
+
+  // Attaches an item's optional image to the element it belongs to. Used
+  // by steps, list items, definitions, cards and callouts, all of which
+  // accept the same four image fields as a figure block.
+  function appendItemImage(parent, item, state, variant) {
+    if (!item || !item.image) return;
+    parent.appendChild(
+      buildFigure(item, state, item.size || variant || "figure", "fig fig--nested")
+    );
+  }
+
+  // Turns the slots left behind by the ![alt](file.png) mark into images.
+  function hydrateImages(root) {
+    if (!root || !root.querySelectorAll) return;
+    const slots = root.querySelectorAll("span.img-slot");
+    for (let i = 0; i < slots.length; i++) {
+      const slot = slots[i];
+      slot.replaceWith(buildImage({
+        image: slot.dataset.image,
+        alt: slot.dataset.alt,
+        placeholder: slot.dataset.alt,
+      }, slot.dataset.size));
+    }
   }
 
   /* ---------------------------------------------------------------
@@ -235,8 +351,12 @@
 
       case "list": {
         const list = el(section.ordered ? "ol" : "ul");
-        (section.items || []).forEach((item) => {
-          list.appendChild(setInline(el("li"), item));
+        (section.items || []).forEach((raw) => {
+          const item = itemOf(raw);
+          const li = el("li");
+          setInline(li, item.text !== undefined ? item.text : item.body);
+          appendItemImage(li, item, state);
+          list.appendChild(li);
         });
         return list;
       }
@@ -251,6 +371,7 @@
           const body = el("span");
           setInline(body, item.body);
           li.appendChild(body);
+          appendItemImage(li, item, state);
           list.appendChild(li);
         });
         return list;
@@ -260,7 +381,9 @@
         const dl = el("dl", "defs");
         (section.items || []).forEach((item) => {
           dl.appendChild(setInline(el("dt"), item.term));
-          dl.appendChild(setInline(el("dd"), item.body));
+          const dd = setInline(el("dd"), item.body);
+          appendItemImage(dd, item, state);
+          dl.appendChild(dd);
         });
         return dl;
       }
@@ -281,7 +404,17 @@
         const tbody = el("tbody");
         (section.rows || []).forEach((row) => {
           const tr = el("tr");
-          row.forEach((cell) => setInline(tr.appendChild(el("td")), cell));
+          (row || []).forEach((raw) => {
+            // A cell is either a plain string, or an object that may
+            // carry text, an image, or both.
+            const cell = itemOf(raw);
+            const td = el("td");
+            if (cell.text !== undefined && cell.text !== null) setInline(td, cell.text);
+            if (cell.image) {
+              td.appendChild(buildFigure(cell, state, cell.size || "thumb", "fig fig--cell"));
+            }
+            tr.appendChild(td);
+          });
           tbody.appendChild(tr);
         });
         table.appendChild(tbody);
@@ -291,8 +424,16 @@
       }
 
       case "figure":
-        state.figureCount += 1;
-        return renderFigure(section, state.figureCount);
+        return buildFigure(section, state, section.size || "figure");
+
+      case "gallery": {
+        const cols = [2, 3, 4].indexOf(section.columns) >= 0 ? section.columns : 2;
+        const grid = el("div", "gallery gallery--" + cols);
+        (section.items || []).forEach((item) => {
+          grid.appendChild(buildFigure(item, state, item.size || "figure", "fig fig--gallery"));
+        });
+        return grid;
+      }
 
       case "callout": {
         const tone = ["note", "caution", "status"].includes(section.tone) ? section.tone : "note";
@@ -303,6 +444,7 @@
         (section.body || []).forEach((para) => {
           box.appendChild(setInline(el("p"), para));
         });
+        appendItemImage(box, section, state, "block");
         return box;
       }
 
@@ -337,6 +479,7 @@
           const card = el("div", "card");
           setInline(card.appendChild(el("p", "card__title")), item.title);
           setInline(card.appendChild(el("p", "card__body")), item.body);
+          appendItemImage(card, item, state, "block");
           grid.appendChild(card);
         });
         return grid;

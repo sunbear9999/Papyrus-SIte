@@ -281,24 +281,23 @@ window.SITE = {
         { type: "heading", level: 2, text: `The major subsystems` },
 
         { type: "prose", body: [
-          `The table below is an orientation map rather than a feature list. Each
-           subsystem is described in detail on the [Features](features.html) page, and
-           the three that carry the most architectural weight have pages of their own.`,
+          `The table below gives a brief overview of the major subsystems. Each
+           feature is described in detail on the [Features](features.html) page.`,
         ]},
 
         { type: "table",
-          caption: `The major subsystems and where they surface in the interface.`,
+          caption: `The major subsystems and where they live in the UI.`,
           columns: [`Subsystem`, `What it does`, `Where it lives in the UI`],
           rows: [
             [`Source ingestion`,
-             `Converts every supported format into one normalised block stream, then into provenance-tracked artifacts`,
+             `Converts every source into a universal textual represenation, extracts entities, and embeds sources into the vector database`,
              `Document explorer; process monitor`],
             [`Artifact store`,
-             `A single relational knowledge base of extracted facts, with an edge table and a vector index keyed the same way`,
-             `Intelligence dock`],
+             `A single relational knowledge base of extracted entities`,
+             `Intelligence Dock`, 'Notes Dock'],
             [`Retrieval`,
-             `One primitive: plan, four parallel signals, fusion and reranking, tiered context packing`,
-             `Search tab; context filter dialog`],
+             `Pulls embedded document chunks from the vector database, reranks them, and provides the best chunks to the LLM for source-grounded outputs`,
+             `Research Assistant; context filter dialog`],
             [`Document analysis`,
              `Structured extraction producing grounded argument maps, methodology trackers and entity networks`,
              `Analysis tab; Workspace canvas`],
@@ -309,13 +308,13 @@ window.SITE = {
              `A visual canvas of typed nodes and typed relations, with AI tools that operate on a selection`,
              `Workspace`],
             [`Workflow engine`,
-             `Executes every AI feature as a blueprint of steps; no feature may call a model directly`,
+             `Executes every AI feature as a blueprint of steps; allows building custom workflows and AI tools`,
              `Blueprint editor; custom tools; process monitor`],
-            [`Data dock`,
+            [`Data management`,
              `Editable datasets, table extraction from PDF regions, charts, and real structured queries`,
              `Data dock`],
             [`Citations`,
-             `Bibliography and in-text extraction, matching between the two, and APA, MLA and Chicago formatting`,
+             `Bibliography and in-text extraction, matching between the two, and autoamtic APA, MLA and Chicago formatting`,
              `Citation dock`],
             [`Prompts and tracing`,
              `Every prompt is a named, editable entry; every model call produces a trace record`,
@@ -329,39 +328,45 @@ window.SITE = {
           ]},
 
         // ---- Overview: where to go next ----
-        { type: "heading", level: 2, text: `Reading the rest of this site` },
+        { type: "heading", level: 2, text: `The Rest of the Site` },
 
         { type: "prose", body: [
-          `[Motivation](why.html) sets out the problems the project is a response to and
+          `[Philosophy](why.html) sets out the problems the project is a response to and
            the design principles that follow from them. [Features](features.html) is the
-           full catalogue, grouped by subsystem. [How It Works](how-it-works.html)
+           full feature catalogue, grouped by subsystem. [How It Works](how-it-works.html)
            describes the layered architecture, the event bus and the workflow engine.
-           [Intelligence Layer](intelligence.html) is a deep treatment of extraction,
-           retrieval and grounded graphs -- the part of the system everything else rests
-           on. [Extensibility](extending.html) covers plugins, packs and the optional web
-           companion. [Status](status.html) is the honest account of what is finished.`,
+           [Intelligence Layer](intelligence.html) explains how the intelligence
+           system extracts entities and builds knowledge graphs. [Extensibility](extending.html) 
+           covers plugins and packs. [Status](status.html) is the honest account of what is finished and whats still in progress.`,
         ]},
 
       ],
     },
 
     /* =================================================================
-       PAGE: MOTIVATION  (why.html)
+       PAGE: Philosophy  (why.html)
        ================================================================= */
 
     why: {
-      title: `Motivation and Design Principles`,
+      title: `Philosophy and Design Principles`,
       subtitle: `The problems the project responds to, and the rules that follow from them.`,
       sections: [
 
         { type: "prose", body: [
-          `Papyrus began from dissatisfaction with a specific and now very common class of
-           tool: the document assistant that accepts a file, chunks it, embeds the chunks,
-           retrieves a handful by similarity, and pastes them into a prompt. That pattern
-           is easy to build and it demonstrates well. It also fails at most of what
-           sustained research actually requires. This page sets out six specific
-           complaints and the six design rules adopted in response. The rules are enforced
-           in the codebase; they are not aspirations.`,
+          `Papyrus began from dissatisfaction with current LLM and research tools.
+          Most currently existing LLM tools are designed to replace human input entirely,
+          and carry with them a host of ethical concerns relating to privacy, data ownership,
+          transparency, and the environment. Papyrus is designed to act fully "human-in-the-loop" every
+          step of the way; LLMs can help find and organize information, but will never write for you.
+          LLMs are used only for tasks that require them, and determinstic and lighter machine learning
+          algorthims are used where possible. All LLM responses are linked to the source material they were generated from, and the user is required to verify
+          the output manually, ensuring no hallucinated information slips through. 
+          Furthermore, Papyrus is designed to be fully local-first, with no cloud service required for any core feature, 
+          allowing data security and alleviating environmental concerns associated with data centers. 
+          All system prompts used by various LLM tools are viewable, and editable, ensuring full transparency
+          of how the LLM came to its answers.`,
+          `Papyrus also aims to be a universal research tool, combining features such as citation management,
+          note taking, reading, data anaylsis, and writing into one application, rather than requiring the user to use multiple tools for different parts of the research process.`,
         ]},
 
         // ---- Why: the problem ----
@@ -369,29 +374,29 @@ window.SITE = {
 
         { type: "heading", level: 3, text: `Chatting with a document is shallow` },
         { type: "prose", body: [
-          `In the standard pattern nothing persists between questions. Nothing is
+          `In a standard doc-chatting program nothing persists between questions. Nothing is
            cross-referenced across documents. Asking the same question twice re-does the
            same work, at the same cost, with no guarantee of the same answer. After a
-           month of use the tool understands the corpus no better than it did on the first
+           month of use the tool understands the material no better than it did on the first
            day, because it never accumulated anything: there is no store of what was found,
-           only a sequence of transient prompts.`,
+           only a sequence of independent prompts.`,
           `A research tool should get more useful as material accrues in it. That requires
-           a persistent knowledge base, not a retrieval trick.`,
+           a persistent knowledge base, and human interaction, not a retrieval trick.`,
         ]},
 
         { type: "heading", level: 3, text: `Language models are the wrong instrument for most of the work` },
         { type: "prose", body: [
           `Generative models are expensive, slow, non-deterministic and prone to
-           confabulation. Using one for a task that a parser, a named-entity recogniser, a
-           regular expression or a graph algorithm already solves is a bad trade on every
-           axis at once: cost, latency, reproducibility and correctness.`,
+           hallucinations. Using one for a task that a parser, a named-entity recogniser, a
+           regular expression or a graph algorithm already solves is a bad trade on multiple
+           levels: cost, latency, reproducibility and correctness.`,
           `Sentence segmentation, citation matching and date normalisation are solved
            problems with deterministic solutions. Spending a model call on them buys
            nothing and loses the guarantee that running the same input twice gives the
            same output.`,
         ]},
 
-        { type: "heading", level: 3, text: `Provenance is usually decorative` },
+        { type: "heading", level: 3, text: `Sources aren't properly cited` },
         { type: "prose", body: [
           `Many tools present a source that turns out to be a paraphrase, a wrong page
            number, or a quotation that does not appear in the document at all. A citation
@@ -405,25 +410,25 @@ window.SITE = {
         { type: "prose", body: [
           `In most tools the user cannot see the prompt, cannot change it, cannot see what
            was retrieved, cannot see which model ran, and cannot stop a job once it has
-           started. That is tolerable in a toy and unacceptable when the output is going
-           to inform written work that carries someone's name.`,
+           started. This makes it impossible for a researcher to fully trust whatever
+           output the tool gives them. All tools in Papyrus are fully transparent by design,
+           so a researcher can see exactly what the software did, and change it if they want to.`,
         ]},
 
         { type: "heading", level: 3, text: `Data lock-in and privacy` },
         { type: "prose", body: [
           `Sending an entire personal or institutional document library to a third-party
-           interface is not always legally, ethically or practically possible. Licensed
+           app is not always legally, ethically or practically possible. Licensed
            material, unpublished work, interview transcripts and confidential records all
-           carry constraints that a cloud-only design cannot satisfy.`,
+           carry constraints that a cloud-only design cannot satisfy. Papyrus is the complete opposite;
+           a local-only design to ensure your work remains yours.`,
         ]},
 
         { type: "heading", level: 3, text: `Monolithic tools resist extension` },
         { type: "prose", body: [
-          `Adding a domain-specific capability -- case law, archival collections, a
-           particular citation workflow -- usually means forking the tool or doing
-           without. A research environment serves too many distinct disciplines for its
-           author to anticipate them, so the extension surface has to be a first-class
-           part of the design rather than a plugin folder bolted on afterwards.`,
+          `Different fields require different capabilities. A lawyer may need precedent extraction,
+           a historian may need archival collection support, and a scientist may need a particular citation workflow. 
+           A tool that cannot be extended to meet these needs is not a universal research tool.`,
         ]},
 
         // ---- Why: principle 1 ----
@@ -436,39 +441,37 @@ window.SITE = {
            local. Local models are served by Ollama or llama.cpp; embeddings are written
            to a local ChromaDB store held beside the project file. No cloud service is
            required for any core feature.`,
-          `This is a constraint accepted for its consequences rather than a marketing
-           position. Choosing it rules out the largest available models and makes the
-           application responsible for its own performance. In exchange, a project can
+          `While choosing this constraint rules out the largest available models and makes the
+           application responsible for its own performance, in exchange, a project can
            contain material that could not otherwise be processed at all, results do not
            depend on a remote service continuing to exist, and there is no per-query cost
            to discourage exploratory work.`,
-          `The one deliberate exception is explicit and narrow: a plugin may request
+          `The one exception is explicit and narrow: a plugin may request
            network access as a permission separate from being enabled, and the hosts it
            may reach are declared and enforced. A plugin can be switched on and left
-           network-blocked. See [Extensibility](extending.html) for the mechanism.`,
+           network-blocked. See [Extensibility](extending.html) for details.`,
         ]},
 
         // ---- Why: principle 2 ----
-        { type: "heading", level: 2, text: `Deterministic-first: the model is a scalpel` },
+        { type: "heading", level: 2, text: `Deterministic-first` },
 
         { type: "prose", body: [
-          `The shorthand used throughout the codebase is that the language model is a
-           scalpel, not a hammer. Ingestion performs **zero generative model calls**.
+          `Ingestion performs **zero generative model calls**.
            Sentence segmentation, entity extraction, sentence classification, citation
-           matching, date normalisation, table extraction, extractive summarisation and
-           argument-relation seeding are all performed deterministically or with small
+           matching, date normalisation, and table extraction, are all performed deterministically or with small
            local encoder models.`,
-          `What this buys is cumulative. Deterministic stages are idempotent, so
-           re-running them is free when nothing has changed. Their output is stable, so
-           an artifact identifier written today still points at the same sentence
+          `This serves multiple purposes. Deterministic stages are idempotent, so
+           re-running them is free when nothing has changed. Their output remains stable, so
+           an artifact identifier written today will point to the same sentence
            tomorrow. They are fast enough to run on import rather than on demand, which is
-           what allows a source to be searchable within seconds of being added. And they
-           are auditable in a way a model call is not: an extractor has a name and a
-           version, and its behaviour can be reasoned about.`,
+           what allows a source to be searchable shortly after being added. And they
+           are auditable in a way a model call is not: an extractor doesn't inherently
+           rely on randomness like a language model does.`,
           `The generative model is then reserved for the work that actually needs
-           judgement -- final synthesis, and a small structured patch over an
-           already-complete deterministic baseline. When it is called it runs at low
-           temperature, sees compact context assembled under an explicit token budget,
+           judgement such as final synthesis, and a small structured patch over an
+           already-complete deterministic baseline. When it is called it runs at a low
+           temperature (low randomness), 
+           The llm is also provided compact context assembled under an explicit token budget,
            and its result is cached. The
            [Intelligence Layer](intelligence.html) page describes exactly where the
            boundary sits.`,

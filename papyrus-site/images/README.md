@@ -25,7 +25,150 @@ Notes:
 - Wide screenshots read best. The figure column is wider than the text column,
   and images are scaled to its full width.
 
-The list below is in the order the figures appear on the site.
+---
+
+# Adding your own images, anywhere
+
+The shot list further down covers the 28 figures already placed on the site.
+This section is the general reference: **how to put an image wherever you
+want it.**
+
+Two rules cover everything:
+
+1. **Any block can be an image.** Put a `figure` block in the `sections`
+   array at the position you want it.
+2. **Any text can contain an image.** Write `![alt](file.png)` in any string.
+3. **Most items can carry an image.** Steps, list items, definitions, cards,
+   callouts and table cells all accept the same four image fields.
+
+Whatever route you use, the behaviour is identical: the file is looked up in
+`images/`, and if it isn't there yet you get a described placeholder instead
+of a broken image. Filenames may include subfolders — `image: "steps/01.png"`
+loads `images/steps/01.png` — and any extension works, not just `.png`.
+
+## The four image fields
+
+Everywhere an image is accepted, these are the fields:
+
+```js
+image:       "my-screenshot.png",     // required — the file in images/
+alt:         `Description for screen readers.`,
+caption:     `The sentence printed underneath.`,   // optional
+placeholder: `What to capture, shown until the file exists.`,
+size:        "figure",                // optional — see sizes below
+```
+
+**Captions control numbering.** Give an image a `caption` and it is numbered
+automatically — "Figure 1.", "Figure 2." — in the order it appears on the
+page. Leave the caption out and it is never numbered. Insert a new captioned
+image in the middle and everything below renumbers itself. You never type a
+number.
+
+## The four sizes
+
+| `size` | Behaviour | Default for |
+|---|---|---|
+| `figure` | Fills the figure column, large descriptive placeholder | figure blocks, gallery items, item images |
+| `block` | Natural size, capped at the container — never upscaled | cards, callouts, the inline mark |
+| `thumb` | Small, capped at about 13rem | table cells |
+| `inline` | Line-height sized, sits inside a sentence | the `inline` inline mark |
+
+Use `size: "block"` on a figure if your image is narrower than the text
+column and you don't want it stretched.
+
+## 1. A figure between any two blocks
+
+The simplest case. Paste this anywhere in a page's `sections` array:
+
+```js
+{ type: "figure",
+  image: "my-screenshot.png",
+  alt: `The main window with a document open.`,
+  caption: `The main window.`,
+  placeholder: `The full application window with the research dock open.` },
+```
+
+## 2. An image inside any sentence
+
+Works in prose, list items, step bodies, definitions, callouts, table cells,
+captions and card text — anywhere you can type:
+
+```
+![The chat tab](chat.png)              fills the container
+![The chat tab](chat.png thumb)        small
+![The toolbar icon](icon.png inline)   sits inside the line of text
+```
+
+## 3. An image under each step
+
+Add the image fields to the step item itself. The numbered list keeps its
+numbering:
+
+```js
+{ type: "steps", items: [
+  { title: `Import`,
+    body:  `Add sources to a project.`,
+    image: "steps/01-import.png",
+    alt: `The import dialog with several files selected.`,
+    caption: `Adding sources to a new project.`,
+    placeholder: `The import dialog mid-selection.` },
+
+  { title: `Read`, body: `No image on this one.` },
+]},
+```
+
+The same fields work on `list` items (write the item as an object with a
+`text` field instead of a plain string), on `definitions` items, on `cards`
+items, and on a `callout` block itself.
+
+## 4. A screenshot column in a table
+
+A table cell is normally a string. Write it as an object instead, and it can
+hold an image, text, or both:
+
+```js
+{ type: "table",
+  columns: [`Subsystem`, `What it does`, `Screenshot`],
+  rows: [
+    [`Ingestion`,
+     `Parses every source into one normalised stream`,
+     { image: "subsystems/ingestion.png",
+       alt: `The process monitor during ingestion.`,
+       placeholder: `The process monitor with several jobs running.` }],
+
+    [`Retrieval`, `One retrieval path`, `--`],   // plain string still fine
+  ]},
+```
+
+Cell images are thumbnails by default. Add `size: "block"` to let one fill
+the column, or `caption` to have it numbered.
+
+## 5. A grid of images
+
+For showing several things side by side — one screenshot per subsystem, say —
+use a `gallery` block. `columns` may be 2, 3 or 4, and it collapses to fewer
+columns on narrow screens:
+
+```js
+{ type: "gallery", columns: 3, items: [
+  { image: "subsystems/ingestion.png", alt: `Ingestion`,
+    caption: `Ingestion.`, placeholder: `The process monitor.` },
+  { image: "subsystems/retrieval.png", alt: `Retrieval`,
+    caption: `Retrieval.`, placeholder: `The search tab with citation cards.` },
+]},
+```
+
+## If an image doesn't appear
+
+You will see a dashed placeholder box naming the exact path it tried, for
+example `images/subsystems/ingestion.png`. That is the debugging tool: if the
+box is showing, the file at that path does not exist. Check the spelling, the
+extension and the subfolder.
+
+---
+
+The list below is the shot list for the 28 figures already placed, in the
+order they appear on the site.
 
 ---
 
