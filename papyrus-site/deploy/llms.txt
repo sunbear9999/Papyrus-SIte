@@ -1,0 +1,22 @@
+# Papyrus website summary
+
+Papyrus is Jackson Cohrs’s experimental personal desktop research project for reading sources, organizing evidence, managing citations, searching across a project, working with data, and reviewing selected uses of local AI.
+
+## Pages
+
+- [Research with sources kept in view](https://papyrusresearch.org/): Papyrus is Jackson Cohrs’s experimental desktop project for reading sources, organizing evidence, and exploring connections with privacy, resource use, and researcher control in mind.
+- [About the Project](https://papyrusresearch.org/about.html): Jackson Cohrs explains the political-science, privacy, environmental, and research-method motivations behind Papyrus as a personal software and learning project.
+- [Features](https://papyrusresearch.org/features.html): A task-oriented guide to reading, annotation, evidence organization, search, assisted analysis, citations, data, workflows, and customization in the Papyrus prototype.
+- [Design Principles](https://papyrusresearch.org/why.html): The privacy, resource-conscious processing, inspectability, provenance, and researcher-judgment principles that guide Papyrus, including their tradeoffs.
+- [How Processing Works](https://papyrusresearch.org/intelligence.html): An approachable technical account of Papyrus source import, SQLite records, provenance, vector and keyword retrieval, reciprocal rank fusion, reranking, model use, and caching.
+- [Plugins & Extensions](https://papyrusresearch.org/extending.html): Why Papyrus has extensions, how three included examples are intended to work, and what the documented API and permission boundaries do and do not guarantee.
+- [Screenshots & Demos](https://papyrusresearch.org/gallery.html): Browse screenshots and video demonstrations collected automatically from across the Papyrus project website.
+- [Status & Limitations](https://papyrusresearch.org/status.html): A conservative capability table for the Papyrus prototype, including available website evidence, known limitations, contradictions, and unverified application facts.
+
+## Important qualifications
+
+- The project is an experimental prototype and is not currently available for download.
+- The website repository does not verify application runtime behavior.
+- Local processing is a privacy and control choice, not proof of lower resource use.
+- Assisted outputs, extracted records, and source links can contain errors.
+- The project is not described as already public or open source.

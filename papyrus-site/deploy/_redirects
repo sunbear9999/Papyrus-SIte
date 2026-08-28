@@ -1,0 +1,7 @@
+# Retired technical route: its material is consolidated into Processing.
+/how-it-works       /intelligence.html  301
+/how-it-works.html  /intelligence.html  301
+
+# There is no download page. Keep these temporary in case that changes.
+/download           /status.html        302
+/download/          /status.html        302

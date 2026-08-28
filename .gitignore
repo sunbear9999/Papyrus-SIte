@@ -1,1 +1,9 @@
+# Local planning and code maps
 website.md
+graphify-out/
+
+# Papyrus source, editor, and working build stay on this device.
+# Only the self-contained static deployment is committed.
+papyrus-site/*
+!papyrus-site/deploy/
+!papyrus-site/deploy/**

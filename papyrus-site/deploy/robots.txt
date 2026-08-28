@@ -1,0 +1,9 @@
+# robots.txt for https://papyrusresearch.org/
+#
+# Public project documentation. Complete page content is pre-rendered during
+# the build; CSS, interaction JavaScript, and media remain crawlable.
+
+User-agent: *
+Allow: /
+
+Sitemap: https://papyrusresearch.org/sitemap.xml
