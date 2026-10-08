@@ -2,6 +2,9 @@
 website.md
 graphify-out/
 
+# Original favicon export stays local; only used assets in deploy are published.
+/favicon/
+
 # Papyrus source, editor, and working build stay on this device.
 # Only the self-contained static deployment is committed.
 papyrus-site/*
