@@ -284,6 +284,15 @@ h2 {
   scroll-margin-top: 1.5rem;
 }
 
+/* The page subtitle already separates the header from the first section.
+   Match both public markup and the editor's section wrapper. */
+.page-header + h2,
+.page-header + .edit-block > h2 {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+
 h3 {
   font-size: 1.06rem;
   margin: 2.1rem 0 0.6rem;
@@ -917,6 +926,18 @@ img.img { cursor: zoom-in; }
 }
 .status-date span { color: var(--ink-muted); }
 
+
+/* --- Contact signup form --- */
+.contact-form { max-width: var(--measure-wide); margin: 0 0 1.6rem; }
+.contact-form__frame {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  border: 1px solid var(--rule);
+  background: var(--paper-raised);
+}
+.contact-form__link { margin: 0.75rem 0 0; font: 0.86rem/1.5 var(--font-sans); }
+.contact-form a { overflow-wrap: anywhere; }
 
 /* ===== 6. Navigation & TOC ========================================== */
 
