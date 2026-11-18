@@ -15,6 +15,8 @@
     if (!hash || hash === "#") return;
     const target = document.getElementById(hash.slice(1));
     if (!target) return;
+    const update = target.closest("details.update-card");
+    if (update) update.open = true;
     if (!target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
     target.focus({ preventScroll: true });
   }
@@ -129,5 +131,6 @@
     setupMediaCollections();
     if (location.hash) focusHash(location.hash);
   });
+  window.addEventListener("hashchange", () => focusHash(location.hash));
   if (typeof narrow.addEventListener === "function") narrow.addEventListener("change", syncNavigation);
 }());

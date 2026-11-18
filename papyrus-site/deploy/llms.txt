@@ -13,6 +13,7 @@ Papyrus is Jackson Cohrs’s experimental personal desktop research project for 
 - [Screenshots & Demos](https://papyrusresearch.org/gallery.html): Browse screenshots and video demonstrations collected automatically from across the Papyrus project website.
 - [Status & Limitations](https://papyrusresearch.org/status.html): A conservative capability table for the Papyrus prototype, including available website evidence, known limitations, contradictions, and unverified application facts.
 - [Contact](https://papyrusresearch.org/contact.html): Contact Jackson Cohrs about Papyrus and express interest in future project updates and releases.
+- [Updates](https://papyrusresearch.org/updates.html): Updates on the development of Papyrus: new features, improvements, and notes on what has changed since the last site update.
 
 ## Important qualifications
 
