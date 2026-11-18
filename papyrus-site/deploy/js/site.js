@@ -11,6 +11,16 @@
     if (disclosure) disclosure.open = !narrow.matches;
   }
 
+  function setupUpdates() {
+    for (const card of document.querySelectorAll("details.update-card")) {
+      const label = card.querySelector(".update-card__label");
+      if (!label) continue;
+      const syncLabel = () => { label.textContent = card.open ? "Close update" : "Read update"; };
+      card.addEventListener("toggle", syncLabel);
+      syncLabel();
+    }
+  }
+
   function focusHash(hash) {
     if (!hash || hash === "#") return;
     const target = document.getElementById(hash.slice(1));
@@ -129,6 +139,7 @@
   document.addEventListener("DOMContentLoaded", () => {
     syncNavigation();
     setupMediaCollections();
+    setupUpdates();
     if (location.hash) focusHash(location.hash);
   });
   window.addEventListener("hashchange", () => focusHash(location.hash));

@@ -1102,7 +1102,10 @@ img.img { cursor: zoom-in; }
   border-radius: 4px;
 }
 .update-card__summary::-webkit-details-marker { display: none; }
-.update-card__summary:hover { background: var(--paper-sunk); }
+@media (hover: hover) {
+  .update-card__summary:hover { background: var(--paper-sunk); }
+}
+.update-card__summary:focus-visible { outline-offset: 3px; }
 .update-card__date {
   display: block;
   color: var(--ink-muted);
@@ -1131,6 +1134,7 @@ h2.update-card__title {
   font: 600 0.85rem/1.5 var(--font-sans);
 }
 .update-card__chevron {
+  flex: none;
   width: 0.45rem;
   height: 0.45rem;
   border-right: 1.5px solid currentColor;
@@ -1138,8 +1142,6 @@ h2.update-card__title {
   transform: translateY(-0.1rem) rotate(45deg);
 }
 .update-card[open] .update-card__chevron { transform: translateY(0.1rem) rotate(225deg); }
-.update-card__close, .update-card[open] .update-card__read { display: none; }
-.update-card[open] .update-card__close { display: inline; }
 .update-card__body { padding: 1.5rem; border-top: 1px solid var(--rule); }
 .update-card__body > :first-child { margin-top: 0; }
 .update-card__body > :last-child { margin-bottom: 0; }
